@@ -94,6 +94,27 @@ public class UploadCouponHtmlUseCase
 
         /*
         ==========================================================
+        DUPLICIDADE
+        ==========================================================
+        */
+
+        if (!string.IsNullOrWhiteSpace(importedCoupon.AccessKey))
+        {
+            var jaImportado =
+                await _purchaseRepository.ExistsByAccessKeyAsync(
+                    importedCoupon.AccessKey
+                );
+
+            if (jaImportado)
+            {
+                throw new Exception(
+                    "Este cupom já foi importado anteriormente."
+                );
+            }
+        }
+
+        /*
+        ==========================================================
         PURCHASE
         ==========================================================
         */

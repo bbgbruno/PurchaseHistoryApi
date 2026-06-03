@@ -87,4 +87,15 @@ public class PurchaseRepository : IPurchaseRepository
 
         transaction.Commit();
     }
+
+    public async Task<bool> ExistsByAccessKeyAsync(string accessKey)
+    {
+        const string sql = @"
+            SELECT COUNT(1) FROM Purchases
+            WHERE AccessKey = @AccessKey";
+
+        using var connection = _connectionFactory.CreateConnection();
+        var count = await connection.ExecuteScalarAsync<int>(sql, new { AccessKey = accessKey });
+        return count > 0;
+    }
 }
