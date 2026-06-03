@@ -25,7 +25,6 @@ public class NormalizationKeywordsController : ControllerBase
         {
             OriginalTerm = request.OriginalTerm,
             ReplacementTerm = request.ReplacementTerm,
-            MatchType = request.MatchType ?? "WholeWord",
             IsActive = true
         };
 
@@ -51,5 +50,5 @@ public class CreateKeywordRequest
 {
     public string OriginalTerm { get; set; } = string.Empty;
     public string ReplacementTerm { get; set; } = string.Empty;
-    public string? MatchType { get; set; }
+    
 }

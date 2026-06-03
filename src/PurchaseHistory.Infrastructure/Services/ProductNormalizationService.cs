@@ -68,17 +68,11 @@ public class ProductNormalizationService
 
             var replacement = Normalize(sub.ReplacementTerm);
 
-            if (sub.MatchType == "WholeWord")
-            {
-                text = Regex.Replace(
-                    text,
-                    $@"\b{Regex.Escape(original)}\b",
-                    replacement);
-            }
-            else
-            {
-                text = text.Replace(original, replacement);
-            }
+            text = Regex.Replace(
+                text,
+                $@"\b{Regex.Escape(original)}\b",
+                replacement);
+
         }
 
         text = Regex.Replace(

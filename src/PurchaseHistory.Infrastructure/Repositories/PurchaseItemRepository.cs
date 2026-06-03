@@ -90,7 +90,10 @@ public class PurchaseItemRepository
     INNER JOIN Stores s
         ON s.Id = p.StoreId
 
-    WHERE pi.OriginalDescription
+    INNER JOIN Products pr
+        ON pr.Id = pi.ProductId
+
+    WHERE pr.NormalizedName
         ILIKE @Search
 
     ORDER BY p.PurchaseDate DESC
