@@ -35,6 +35,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductNormalizationMappingRepository, ProductNormalizationMappingRepository>();
 builder.Services.AddScoped<IProductKeywordSubstitutionRepository, ProductKeywordSubstitutionRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICouponImportRepository, CouponImportRepository>();
 builder.Services.AddScoped<IProductNormalizationService, ProductNormalizationService>();
 
