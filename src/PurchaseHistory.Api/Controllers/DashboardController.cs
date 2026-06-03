@@ -16,13 +16,22 @@ public class DashboardController : ControllerBase
     {
         using var connection = connectionFactory.CreateConnection();
 
-        var totalSql = @"
+        var currentMonthSql = @"
             SELECT COALESCE(SUM(TotalValue), 0)
             FROM Purchases
             WHERE UserId = @UserId
-              AND PurchaseDate >= NOW() - INTERVAL '30 days'";
+              AND PurchaseDate >= DATE_TRUNC('month', NOW())";
 
-        var total = await connection.ExecuteScalarAsync<decimal>(totalSql, new { UserId = userId });
+        var currentTotal = await connection.ExecuteScalarAsync<decimal>(currentMonthSql, new { UserId = userId });
+
+        var lastMonthSql = @"
+            SELECT COALESCE(SUM(TotalValue), 0)
+            FROM Purchases
+            WHERE UserId = @UserId
+              AND PurchaseDate >= DATE_TRUNC('month', NOW() - INTERVAL '1 month')
+              AND PurchaseDate < DATE_TRUNC('month', NOW())";
+
+        var lastTotal = await connection.ExecuteScalarAsync<decimal>(lastMonthSql, new { UserId = userId });
 
         var categoriesSql = @"
             SELECT
@@ -34,7 +43,7 @@ public class DashboardController : ControllerBase
             INNER JOIN Products pr ON pr.Id = pi.ProductId
             INNER JOIN Categories c ON c.Id = pr.CategoryId
             WHERE p.UserId = @UserId
-              AND p.PurchaseDate >= NOW() - INTERVAL '30 days'
+              AND p.PurchaseDate >= DATE_TRUNC('month', NOW())
               AND pr.CategoryId IS NOT NULL
             GROUP BY c.Id, c.Name
             ORDER BY TotalSpent DESC";
@@ -43,7 +52,8 @@ public class DashboardController : ControllerBase
 
         return Ok(new DashboardDto
         {
-            TotalLastMonth = total,
+            TotalCurrentMonth = currentTotal,
+            TotalLastMonth = lastTotal,
             Categories = categories.ToList()
         });
     }

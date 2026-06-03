@@ -2,6 +2,7 @@ namespace PurchaseHistory.Domain.Dtos;
 
 public class DashboardDto
 {
+    public decimal TotalCurrentMonth { get; set; }
     public decimal TotalLastMonth { get; set; }
     public List<CategorySummaryDto> Categories { get; set; } = [];
 }
