@@ -33,51 +33,47 @@ public class DashboardController : ControllerBase
 
         var lastTotal = await connection.ExecuteScalarAsync<decimal>(lastMonthSql, new { UserId = userId });
 
-        var categoriesCurrentSql = @"
+        var categoriesSql = @"
             SELECT
                 c.Id AS CategoryId,
                 c.Name AS CategoryName,
-                COALESCE(SUM(pi.TotalPrice), 0) AS TotalCurrentMonth
+                COALESCE(SUM(CASE
+                    WHEN p.PurchaseDate >= DATE_TRUNC('month', NOW())
+                    THEN pi.TotalPrice ELSE 0
+                END), 0) AS TotalCurrentMonth,
+                COALESCE(SUM(CASE
+                    WHEN p.PurchaseDate >= DATE_TRUNC('month', NOW() - INTERVAL '1 month')
+                         AND p.PurchaseDate < DATE_TRUNC('month', NOW())
+                    THEN pi.TotalPrice ELSE 0
+                END), 0) AS TotalLastMonth
             FROM PurchaseItems pi
             INNER JOIN Purchases p ON p.Id = pi.PurchaseId
             INNER JOIN Products pr ON pr.Id = pi.ProductId
             INNER JOIN Categories c ON c.Id = pr.CategoryId
             WHERE p.UserId = @UserId
-              AND p.PurchaseDate >= DATE_TRUNC('month', NOW())
               AND pr.CategoryId IS NOT NULL
-            GROUP BY c.Id, c.Name
-            ORDER BY TotalCurrentMonth DESC";
-
-        var currentCategories = (await connection.QueryAsync<CategorySummaryDto>(categoriesCurrentSql, new { UserId = userId })).ToList();
-
-        var categoriesLastSql = @"
-            SELECT
-                c.Id AS CategoryId,
-                COALESCE(SUM(pi.TotalPrice), 0) AS TotalLastMonth
-            FROM PurchaseItems pi
-            INNER JOIN Purchases p ON p.Id = pi.PurchaseId
-            INNER JOIN Products pr ON pr.Id = pi.ProductId
-            INNER JOIN Categories c ON c.Id = pr.CategoryId
-            WHERE p.UserId = @UserId
               AND p.PurchaseDate >= DATE_TRUNC('month', NOW() - INTERVAL '1 month')
-              AND p.PurchaseDate < DATE_TRUNC('month', NOW())
-              AND pr.CategoryId IS NOT NULL
-            GROUP BY c.Id";
+            GROUP BY c.Id, c.Name
+            HAVING
+                COALESCE(SUM(CASE
+                    WHEN p.PurchaseDate >= DATE_TRUNC('month', NOW())
+                    THEN pi.TotalPrice ELSE 0
+                END), 0) > 0
+                OR
+                COALESCE(SUM(CASE
+                    WHEN p.PurchaseDate >= DATE_TRUNC('month', NOW() - INTERVAL '1 month')
+                         AND p.PurchaseDate < DATE_TRUNC('month', NOW())
+                    THEN pi.TotalPrice ELSE 0
+                END), 0) > 0
+            ORDER BY TotalCurrentMonth DESC, TotalLastMonth DESC";
 
-        var lastCategories = (await connection.QueryAsync(categoriesLastSql, new { UserId = userId })).ToList();
-
-        foreach (var current in currentCategories)
-        {
-            var last = lastCategories.FirstOrDefault(l => (Guid)l.CategoryId == current.CategoryId);
-            if (last != null)
-                current.TotalLastMonth = (decimal)last.TotalLastMonth;
-        }
+        var categories = (await connection.QueryAsync<CategorySummaryDto>(categoriesSql, new { UserId = userId })).ToList();
 
         return Ok(new DashboardDto
         {
             TotalCurrentMonth = currentTotal,
             TotalLastMonth = lastTotal,
-            Categories = currentCategories
+            Categories = categories
         });
     }
 }
