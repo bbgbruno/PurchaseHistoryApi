@@ -11,5 +11,6 @@ public class CategorySummaryDto
 {
     public Guid CategoryId { get; set; }
     public string CategoryName { get; set; } = string.Empty;
-    public decimal TotalSpent { get; set; }
+    public decimal TotalCurrentMonth { get; set; }
+    public decimal TotalLastMonth { get; set; }
 }
