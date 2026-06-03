@@ -53,19 +53,28 @@ public class PurchaseRepository : IPurchaseRepository
         return purchase.Id;
     }
 
-    public async Task<IEnumerable<PurchaseListDto>> GetAllAsync()
+    public async Task<IEnumerable<PurchaseListDto>> GetAllAsync(Guid? userId = null)
     {
-        const string sql = @"
+        var sql = @"
             SELECT
                 p.Id,
+                p.UserId,
                 p.PurchaseDate,
                 p.TotalValue,
                 s.Name AS StoreName
             FROM Purchases p
-            INNER JOIN Stores s ON s.Id = p.StoreId
-            ORDER BY p.PurchaseDate DESC";
+            INNER JOIN Stores s ON s.Id = p.StoreId";
+
+        if (userId.HasValue)
+            sql += " WHERE p.UserId = @UserId";
+
+        sql += " ORDER BY p.PurchaseDate DESC";
 
         using var connection = _connectionFactory.CreateConnection();
+
+        if (userId.HasValue)
+            return await connection.QueryAsync<PurchaseListDto>(sql, new { UserId = userId.Value });
+
         return await connection.QueryAsync<PurchaseListDto>(sql);
     }
 

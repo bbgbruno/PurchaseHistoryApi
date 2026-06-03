@@ -6,7 +6,7 @@ namespace PurchaseHistory.Domain.Interfaces.Repositories;
 public interface IPurchaseRepository
 {
     Task<Guid> CreateAsync(Purchase purchase);
-    Task<IEnumerable<PurchaseListDto>> GetAllAsync();
+    Task<IEnumerable<PurchaseListDto>> GetAllAsync(Guid? userId = null);
     Task DeleteAsync(Guid id);
     Task<bool> ExistsByAccessKeyAsync(string accessKey);
 }

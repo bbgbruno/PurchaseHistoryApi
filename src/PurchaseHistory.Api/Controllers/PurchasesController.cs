@@ -9,9 +9,10 @@ public class PurchasesController : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll(
+        [FromQuery] Guid? userId,
         [FromServices] IPurchaseRepository repository)
     {
-        var purchases = await repository.GetAllAsync();
+        var purchases = await repository.GetAllAsync(userId);
         return Ok(purchases);
     }
 
