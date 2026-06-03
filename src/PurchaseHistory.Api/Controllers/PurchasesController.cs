@@ -33,4 +33,22 @@ public class PurchasesController : ControllerBase
         await repository.DeleteAsync(id);
         return NoContent();
     }
+
+    [HttpPatch("{id}/purchase-date")]
+    public async Task<IActionResult> UpdatePurchaseDate(
+        Guid id,
+        [FromBody] UpdatePurchaseDateRequest request,
+        [FromServices] IPurchaseRepository repository)
+    {
+        var updated = await repository.UpdatePurchaseDateAsync(id, request.PurchaseDate);
+        if (!updated)
+            return NotFound();
+
+        return NoContent();
+    }
+}
+
+public class UpdatePurchaseDateRequest
+{
+    public DateTime PurchaseDate { get; set; }
 }

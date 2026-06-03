@@ -107,4 +107,16 @@ public class PurchaseRepository : IPurchaseRepository
         var count = await connection.ExecuteScalarAsync<int>(sql, new { AccessKey = accessKey });
         return count > 0;
     }
+
+    public async Task<bool> UpdatePurchaseDateAsync(Guid id, DateTime purchaseDate)
+    {
+        const string sql = @"
+            UPDATE Purchases
+            SET PurchaseDate = @PurchaseDate
+            WHERE Id = @Id";
+
+        using var connection = _connectionFactory.CreateConnection();
+        var rows = await connection.ExecuteAsync(sql, new { Id = id, PurchaseDate = purchaseDate });
+        return rows > 0;
+    }
 }

@@ -9,4 +9,5 @@ public interface IPurchaseRepository
     Task<IEnumerable<PurchaseListDto>> GetAllAsync(Guid? userId = null);
     Task DeleteAsync(Guid id);
     Task<bool> ExistsByAccessKeyAsync(string accessKey);
+    Task<bool> UpdatePurchaseDateAsync(Guid id, DateTime purchaseDate);
 }
