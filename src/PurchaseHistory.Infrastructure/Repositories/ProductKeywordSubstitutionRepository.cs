@@ -18,7 +18,7 @@ public class ProductKeywordSubstitutionRepository : IProductKeywordSubstitutionR
     {
         const string sql = @"
             SELECT * FROM ProductKeywordSubstitutions
-            WHERE IsActive = 1
+            WHERE IsActive = true
             ORDER BY CreatedAt DESC";
 
         using var connection = _connectionFactory.CreateConnection();

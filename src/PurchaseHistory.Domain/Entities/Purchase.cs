@@ -4,7 +4,7 @@ public class Purchase
 {
     public Guid Id { get; set; }
 
-    public Guid UserId { get; set; } = Guid.Parse("8EB78D4D-9744-49F6-9C34-FE0774E322FB");
+    public Guid UserId { get; set; } = Guid.Parse("36115116-5fb6-46a9-a42f-4d26e4f7f896");
 
     public Guid StoreId { get; set; }
 

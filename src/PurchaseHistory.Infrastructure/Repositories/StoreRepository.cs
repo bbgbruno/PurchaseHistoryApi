@@ -20,9 +20,10 @@ public class StoreRepository : IStoreRepository
         string document)
     {
         const string sql = @"
-        SELECT TOP 1 *
+        SELECT *
         FROM Stores
-        WHERE DocumentNumber = @Document";
+        WHERE DocumentNumber = @Document
+        LIMIT 1";
 
         using var connection =
         _connectionFactory.CreateConnection();

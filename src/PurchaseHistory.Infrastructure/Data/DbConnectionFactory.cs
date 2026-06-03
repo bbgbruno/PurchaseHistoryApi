@@ -1,5 +1,5 @@
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Npgsql;
 using System.Data;
 
 namespace PurchaseHistory.Infrastructure.Data;
@@ -15,7 +15,7 @@ public class DbConnectionFactory
 
     public IDbConnection CreateConnection()
     {
-        return new SqlConnection(
+        return new NpgsqlConnection(
             _configuration.GetConnectionString("DefaultConnection")
         );
     }

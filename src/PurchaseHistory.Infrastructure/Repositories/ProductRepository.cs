@@ -19,9 +19,10 @@ public class ProductRepository : IProductRepository
         string normalizedName)
     {
         const string sql = @"
-        SELECT TOP 1 *
+        SELECT *
         FROM Products
-        WHERE NormalizedName = @NormalizedName";
+        WHERE NormalizedName = @NormalizedName
+        LIMIT 1";
 
         using var connection =
             _connectionFactory.CreateConnection();

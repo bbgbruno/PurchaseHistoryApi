@@ -62,7 +62,7 @@ public class PurchaseItemRepository
     {
 
         const string sql = @"
-    SELECT TOP 50
+    SELECT
 
         pi.ProductId,
 
@@ -91,9 +91,10 @@ public class PurchaseItemRepository
         ON s.Id = p.StoreId
 
     WHERE pi.OriginalDescription
-        LIKE @Search
+        ILIKE @Search
 
-    ORDER BY p.PurchaseDate DESC";
+    ORDER BY p.PurchaseDate DESC
+    LIMIT 50";
 
         using var connection =
             _connectionFactory.CreateConnection();

@@ -18,7 +18,7 @@ public class ProductNormalizationMappingRepository : IProductNormalizationMappin
     {
         const string sql = @"
             SELECT * FROM ProductNormalizationMappings
-            WHERE IsActive = 1
+            WHERE IsActive = true
             ORDER BY CreatedAt DESC";
 
         using var connection = _connectionFactory.CreateConnection();
