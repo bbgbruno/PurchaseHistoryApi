@@ -14,4 +14,22 @@ public class PurchasesController : ControllerBase
         var purchases = await repository.GetAllAsync();
         return Ok(purchases);
     }
+
+    [HttpGet("{id}/items")]
+    public async Task<IActionResult> GetItems(
+        Guid id,
+        [FromServices] IPurchaseItemRepository repository)
+    {
+        var items = await repository.GetByPurchaseIdAsync(id);
+        return Ok(items);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(
+        Guid id,
+        [FromServices] IPurchaseRepository repository)
+    {
+        await repository.DeleteAsync(id);
+        return NoContent();
+    }
 }

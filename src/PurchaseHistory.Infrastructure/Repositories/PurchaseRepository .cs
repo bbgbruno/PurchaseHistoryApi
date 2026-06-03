@@ -68,4 +68,22 @@ public class PurchaseRepository : IPurchaseRepository
         using var connection = _connectionFactory.CreateConnection();
         return await connection.QueryAsync<PurchaseListDto>(sql);
     }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        using var transaction = connection.BeginTransaction();
+
+        await connection.ExecuteAsync(
+            "DELETE FROM PurchaseItems WHERE PurchaseId = @Id",
+            new { Id = id },
+            transaction);
+
+        await connection.ExecuteAsync(
+            "DELETE FROM Purchases WHERE Id = @Id",
+            new { Id = id },
+            transaction);
+
+        transaction.Commit();
+    }
 }

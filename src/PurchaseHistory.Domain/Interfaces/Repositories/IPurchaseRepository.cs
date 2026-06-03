@@ -7,4 +7,5 @@ public interface IPurchaseRepository
 {
     Task<Guid> CreateAsync(Purchase purchase);
     Task<IEnumerable<PurchaseListDto>> GetAllAsync();
+    Task DeleteAsync(Guid id);
 }

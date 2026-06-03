@@ -200,4 +200,15 @@ public class PurchaseItemRepository
             History = items
         };
     }
+
+    public async Task<IEnumerable<PurchaseItem>> GetByPurchaseIdAsync(Guid purchaseId)
+    {
+        const string sql = @"
+            SELECT * FROM PurchaseItems
+            WHERE PurchaseId = @PurchaseId
+            ORDER BY OriginalDescription";
+
+        using var connection = _connectionFactory.CreateConnection();
+        return await connection.QueryAsync<PurchaseItem>(sql, new { PurchaseId = purchaseId });
+    }
 }

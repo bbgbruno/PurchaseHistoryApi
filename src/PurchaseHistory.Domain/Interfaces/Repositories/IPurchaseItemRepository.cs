@@ -15,5 +15,6 @@ namespace PurchaseHistory.Domain.Interfaces.Repositories
         Task<ProductDetailsDto?> GetProductDetailsAsync(Guid productId);
         Task RedirectProductIdAsync(Guid oldProductId, Guid newProductId);
         Task<IEnumerable<PurchaseItem>> GetByProductIdAsync(Guid productId);
+        Task<IEnumerable<PurchaseItem>> GetByPurchaseIdAsync(Guid purchaseId);
     }
 }
