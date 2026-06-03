@@ -8,6 +8,14 @@ namespace PurchaseHistory.Api.Controllers;
 [Route("api/coupon-imports")]
 public class CouponImportsController : ControllerBase
 {
+    [HttpGet("pending")]
+    public async Task<IActionResult> GetPending(
+        [FromServices] ICouponImportRepository repository)
+    {
+        var items = await repository.GetPendingAsync();
+        return Ok(items);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(
         [FromBody] CreateCouponImportRequest request,

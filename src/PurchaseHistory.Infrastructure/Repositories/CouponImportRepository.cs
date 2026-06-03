@@ -28,4 +28,15 @@ public class CouponImportRepository : ICouponImportRepository
 
         return couponImport.Id;
     }
+
+    public async Task<IEnumerable<CouponImport>> GetPendingAsync()
+    {
+        const string sql = @"
+            SELECT * FROM CouponsImport
+            WHERE Status = 'Pending'
+            ORDER BY CreatedAt DESC";
+
+        using var connection = _connectionFactory.CreateConnection();
+        return await connection.QueryAsync<CouponImport>(sql);
+    }
 }
