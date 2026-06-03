@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using PurchaseHistory.Domain.Dtos;
 using PurchaseHistory.Domain.Entities;
 using PurchaseHistory.Domain.Interfaces.Repositories;
 using PurchaseHistory.Infrastructure.Data;
@@ -50,5 +51,21 @@ public class PurchaseRepository : IPurchaseRepository
         await connection.ExecuteAsync(sql, purchase);
 
         return purchase.Id;
+    }
+
+    public async Task<IEnumerable<PurchaseListDto>> GetAllAsync()
+    {
+        const string sql = @"
+            SELECT
+                p.Id,
+                p.PurchaseDate,
+                p.TotalValue,
+                s.Name AS StoreName
+            FROM Purchases p
+            INNER JOIN Stores s ON s.Id = p.StoreId
+            ORDER BY p.PurchaseDate DESC";
+
+        using var connection = _connectionFactory.CreateConnection();
+        return await connection.QueryAsync<PurchaseListDto>(sql);
     }
 }
