@@ -72,6 +72,7 @@ public class PurchaseRepository : IPurchaseRepository
     public async Task DeleteAsync(Guid id)
     {
         using var connection = _connectionFactory.CreateConnection();
+        connection.Open();
         using var transaction = connection.BeginTransaction();
 
         await connection.ExecuteAsync(
