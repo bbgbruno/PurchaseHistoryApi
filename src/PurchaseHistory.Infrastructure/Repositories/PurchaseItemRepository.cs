@@ -214,4 +214,15 @@ public class PurchaseItemRepository
         using var connection = _connectionFactory.CreateConnection();
         return await connection.QueryAsync<PurchaseItem>(sql, new { PurchaseId = purchaseId });
     }
+
+    public async Task UpdateCategoryAsync(Guid id, Guid? categoryId)
+    {
+        const string sql = @"
+            UPDATE PurchaseItems
+            SET CategoryId = @CategoryId
+            WHERE Id = @Id";
+
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.ExecuteAsync(sql, new { Id = id, CategoryId = categoryId });
+    }
 }
