@@ -68,7 +68,7 @@ public class PurchaseItemRepository
 
         pi.Id AS PurchaseItemId,
 
-        pi.OriginalDescription AS ProductName,
+        pr.NormalizedName AS ProductName,
 
         pi.Quantity,
 
