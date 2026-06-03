@@ -207,22 +207,29 @@ public class PurchaseItemRepository
     public async Task<IEnumerable<PurchaseItem>> GetByPurchaseIdAsync(Guid purchaseId)
     {
         const string sql = @"
-            SELECT * FROM PurchaseItems
-            WHERE PurchaseId = @PurchaseId
-            ORDER BY OriginalDescription";
+            SELECT
+                pi.*,
+                pr.CategoryId
+            FROM PurchaseItems pi
+            LEFT JOIN Products pr ON pr.Id = pi.ProductId
+            WHERE pi.PurchaseId = @PurchaseId
+            ORDER BY pi.OriginalDescription";
 
         using var connection = _connectionFactory.CreateConnection();
         return await connection.QueryAsync<PurchaseItem>(sql, new { PurchaseId = purchaseId });
     }
 
-    public async Task UpdateCategoryAsync(Guid id, Guid? categoryId)
+    public async Task<PurchaseItem?> GetByIdAsync(Guid id)
     {
         const string sql = @"
-            UPDATE PurchaseItems
-            SET CategoryId = @CategoryId
-            WHERE Id = @Id";
+            SELECT
+                pi.*,
+                pr.CategoryId
+            FROM PurchaseItems pi
+            LEFT JOIN Products pr ON pr.Id = pi.ProductId
+            WHERE pi.Id = @Id";
 
         using var connection = _connectionFactory.CreateConnection();
-        await connection.ExecuteAsync(sql, new { Id = id, CategoryId = categoryId });
+        return await connection.QueryFirstOrDefaultAsync<PurchaseItem>(sql, new { Id = id });
     }
 }

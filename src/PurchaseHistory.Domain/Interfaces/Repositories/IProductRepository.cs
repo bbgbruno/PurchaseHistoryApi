@@ -13,6 +13,7 @@ public interface IProductRepository
     Task<Product?> GetByIdAsync(Guid id);
 
     Task UpdateAsync(Product product);
+    Task UpdateCategoryAsync(Guid id, Guid? categoryId);
 
     Task DeleteAsync(Guid id);
 }

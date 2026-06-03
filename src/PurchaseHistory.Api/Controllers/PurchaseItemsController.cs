@@ -7,18 +7,24 @@ namespace PurchaseHistory.Api.Controllers;
 [Route("api/purchase-items")]
 public class PurchaseItemsController : ControllerBase
 {
-    [HttpPatch("{id}/category")]
-    public async Task<IActionResult> UpdateCategory(
+    [HttpPatch("{id}/product-category")]
+    public async Task<IActionResult> UpdateProductCategory(
         Guid id,
-        [FromBody] ItemCategoryRequest request,
-        [FromServices] IPurchaseItemRepository repository)
+        [FromBody] ProductCategoryRequest request,
+        [FromServices] IPurchaseItemRepository purchaseItemRepository,
+        [FromServices] IProductRepository productRepository)
     {
-        await repository.UpdateCategoryAsync(id, request.CategoryId);
+        var item = await purchaseItemRepository.GetByIdAsync(id);
+
+        if (item?.ProductId == null)
+            return NotFound();
+
+        await productRepository.UpdateCategoryAsync(item.ProductId.Value, request.CategoryId);
         return NoContent();
     }
 }
 
-public class ItemCategoryRequest
+public class ProductCategoryRequest
 {
     public Guid? CategoryId { get; set; }
 }

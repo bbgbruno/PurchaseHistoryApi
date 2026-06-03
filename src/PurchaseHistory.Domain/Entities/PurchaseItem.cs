@@ -25,4 +25,6 @@ public class PurchaseItem
     public decimal TotalPrice { get; set; }
 
     public DateTime CreatedAt { get; set; }
+
+    public Guid? CategoryId { get; set; }
 }

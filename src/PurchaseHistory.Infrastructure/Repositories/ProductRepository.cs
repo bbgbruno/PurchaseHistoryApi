@@ -97,6 +97,17 @@ public class ProductRepository : IProductRepository
         await connection.ExecuteAsync(sql, product);
     }
 
+    public async Task UpdateCategoryAsync(Guid id, Guid? categoryId)
+    {
+        const string sql = @"
+            UPDATE Products
+            SET CategoryId = @CategoryId
+            WHERE Id = @Id";
+
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.ExecuteAsync(sql, new { Id = id, CategoryId = categoryId });
+    }
+
     public async Task DeleteAsync(Guid id)
     {
         const string sql = @"DELETE FROM Products WHERE Id = @Id";
