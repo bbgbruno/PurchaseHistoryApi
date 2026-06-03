@@ -170,8 +170,9 @@ public class UploadCouponHtmlUseCase
             ======================================================
             */
 
-            normalizedName = await _productNormalization.NormalizeWithSubstitutionsAsync(normalizedName);
             normalizedName = await _productNormalization.ApplyMappingsAsync(importedItem.OriginalDescription);
+
+            normalizedName = await _productNormalization.NormalizeWithSubstitutionsAsync(normalizedName);
 
             /*
             ======================================================

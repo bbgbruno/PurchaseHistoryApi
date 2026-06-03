@@ -1,5 +1,6 @@
 using PurchaseHistory.Domain.Entities;
 using PurchaseHistory.Domain.Interfaces.Repositories;
+using PurchaseHistory.Domain.Interfaces.Services;
 
 namespace PurchaseHistory.Application.UseCases.ApplyProductNormalization;
 
@@ -8,23 +9,88 @@ public class ApplyProductNormalizationUseCase
     private readonly IProductNormalizationMappingRepository _mappingRepository;
     private readonly IProductRepository _productRepository;
     private readonly IPurchaseItemRepository _purchaseItemRepository;
+    private readonly IProductNormalizationService _normalizationService;
 
     public ApplyProductNormalizationUseCase(
         IProductNormalizationMappingRepository mappingRepository,
         IProductRepository productRepository,
-        IPurchaseItemRepository purchaseItemRepository)
+        IPurchaseItemRepository purchaseItemRepository,
+        IProductNormalizationService normalizationService)
     {
         _mappingRepository = mappingRepository;
         _productRepository = productRepository;
         _purchaseItemRepository = purchaseItemRepository;
+        _normalizationService = normalizationService;
     }
 
     public async Task<ApplyProductNormalizationOutput> Handle()
     {
-        var mappings = await _mappingRepository.GetAllActiveAsync();
         var totalItemsRedirected = 0;
         var totalProductsRemoved = 0;
         var appliedRules = new List<AppliedRuleResult>();
+
+        /*
+        ==========================================================
+        SUBSTITUIÇÕES
+        ==========================================================
+        */
+
+        var allProducts = await _productRepository.GetAllAsync();
+
+        foreach (var product in allProducts)
+        {
+            var substituted = await _normalizationService.NormalizeWithSubstitutionsAsync(product.NormalizedName);
+
+            if (substituted == product.NormalizedName)
+                continue;
+
+            Product? targetProduct;
+
+            targetProduct = await _productRepository.FindByNameAsync(substituted);
+
+            if (targetProduct == null)
+            {
+                targetProduct = new Product
+                {
+                    NormalizedName = substituted,
+                    CreatedAt = DateTime.UtcNow
+                };
+                var newId = await _productRepository.CreateAsync(targetProduct);
+                targetProduct.Id = newId;
+            }
+
+            if (product.Id == targetProduct.Id)
+                continue;
+
+            var items = await _purchaseItemRepository.GetByProductIdAsync(product.Id);
+            var itemsList = items.ToList();
+            var itemCount = itemsList.Count;
+
+            if (itemCount > 0)
+            {
+                await _purchaseItemRepository.RedirectProductIdAsync(product.Id, targetProduct.Id);
+                totalItemsRedirected += itemCount;
+            }
+
+            await _productRepository.DeleteAsync(product.Id);
+            totalProductsRemoved++;
+
+            appliedRules.Add(new AppliedRuleResult
+            {
+                OriginalText = product.NormalizedName,
+                ReplacementText = substituted,
+                ItemsRedirected = itemCount,
+                ProductRemoved = true
+            });
+        }
+
+        /*
+        ==========================================================
+        MAPPINGS
+        ==========================================================
+        */
+
+        var mappings = await _mappingRepository.GetAllActiveAsync();
 
         foreach (var mapping in mappings)
         {
