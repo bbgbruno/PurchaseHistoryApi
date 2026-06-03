@@ -1,0 +1,414 @@
+var caminhoRaiz = "/";
+
+var _args_mensagem = '';
+var _args_sucesso = '';
+var _args_retorno_confirma = '';
+var _args_submeter_pagina_confirma_retorno = '';
+var _args_campo_retorno = '';
+var _args_cancelar = '';
+var _args_retorno_script = null;
+
+
+//objeto usado para verificar a versão do navegador
+var BrowserDetect = {
+    init: function () {
+        this.browser = this.searchString(this.dataBrowser) || "Other";
+        this.version = this.searchVersion(navigator.userAgent) || this.searchVersion(navigator.appVersion) || "Unknown";
+    },
+    searchString: function (data) {
+        for (var i = 0; i < data.length; i++) {
+            var dataString = data[i].string;
+            this.versionSearchString = data[i].subString;
+
+            if (dataString.indexOf(data[i].subString) !== -1) {
+                return data[i].identity;
+            }
+        }
+    },
+    searchVersion: function (dataString) {
+        var index = dataString.indexOf(this.versionSearchString);
+        if (index === -1) {
+            return;
+        }
+
+        var rv = dataString.indexOf("rv:");
+        if (this.versionSearchString === "Trident" && rv !== -1) {
+            return parseFloat(dataString.substring(rv + 3));
+        } else {
+            return parseFloat(dataString.substring(index + this.versionSearchString.length + 1));
+        }
+    },
+
+    dataBrowser: [
+        { string: navigator.userAgent, subString: "Chrome", identity: "Chrome" },
+        { string: navigator.userAgent, subString: "MSIE", identity: "Explorer" },
+        { string: navigator.userAgent, subString: "Trident", identity: "Explorer" },
+        { string: navigator.userAgent, subString: "Firefox", identity: "Firefox" },
+        { string: navigator.userAgent, subString: "Safari", identity: "Safari" },
+        { string: navigator.userAgent, subString: "Opera", identity: "Opera" }
+    ]
+
+};
+
+BrowserDetect.init();
+
+
+function bloquearTela(modal) {
+
+    $.blockUI({ message: '', css: { backgroundColor: 'transparent' } });
+
+    $('.blockUI.blockOverlay').on('click', function (e) {
+        e.stopPropagation();
+        modal.focus();
+    });
+
+    $(modal).on('load', function (e) {
+
+        e.stopPropagation();
+        modal.focus();
+
+    }).on('unload', function () {
+
+        setTimeout(function () {
+
+            if (modal.closed) {
+                $.unblockUI({ fadeOut: 50 });
+            }
+        }, 800);
+    });
+}
+
+// Função utilizada para restaurar a p?gina ao in?cio da tela, quando o ajax está sendo usado
+function RestauraTela() {
+    window.scrollTo(0, 0);
+    return true;
+}
+
+function DirecionaFoco(pIdControle) {
+    pIdControle.Focus();
+}
+
+// Função do Framework
+function MudaTabEnter() {
+    if (event.keyCode == 13)
+        event.keyCode = 9;
+}
+
+//A tecla ENTER fica com a mesma funcionalidade que a tecla TAB
+function TABEnter(oEvent) {
+    var oEvent = (oEvent) ? oEvent : event;
+    var oTarget = (oEvent.target) ? oEvent.target : oEvent.srcElement;
+    if (oEvent.keyCode == 13)
+        oEvent.keyCode = 9;
+    if (oTarget.type == "text" && oEvent.keyCode == 13)
+        oEvent.keyCode = 9;
+    if (oTarget.type == "radio" && oEvent.keyCode == 13)
+        oEvent.keyCode = 9;
+}
+
+//Para ser usada em lugar do confirm do javascript
+function Confirma(pMensagem) {
+    pMensagem = "<p align=\"center\">" + pMensagem + "</p>";
+    Confirma(pMensagem, null, null, null, null, false);
+}
+
+
+function ConfirmaCancelando(pMensagem, pPagina, pIdCampoRetorno, pLargura, pAltura, pExecutaPost, pPermiteCallbackCancelar) {
+
+    if (pPagina == null) {
+        pPagina = caminhoRaiz + "Mensagem.aspx";
+    }
+
+    if (pLargura == null) {
+        pLargura = 400;
+    }
+
+    if (pAltura == null) {
+
+        pAltura = 200;
+    }
+
+    var argumentos;
+
+    if (navigator.appName == "Microsoft Internet Explorer") {
+
+        argumentos = new Array(3);
+        argumentos[0] = self;
+        argumentos[1] = pMensagem;
+        argumentos[3] = pPermiteCallbackCancelar;
+
+        window.showModalDialog(pPagina, argumentos, "dialogWidth:'" + pLargura + "px';dialogHeight:'" + pAltura + "px'; toolbar='no';directories='no';status='no';menubar=no;scrollbars='no';resizable='no'");
+
+        if (pExecutaPost) {
+
+            $(self.document).ready(function () {
+
+                var $campo = $('#' + pIdCampoRetorno + '');
+
+                $campo.val(argumentos[2]);
+
+                self.document.all.aspnetForm.submit();
+
+            });
+        }
+
+        return argumentos[2];
+    }
+    else {
+
+        var left = (screen.width / 2) - (pLargura / 2);
+        var top = (screen.height / 2) - (pAltura / 2);
+
+        _args_mensagem = pMensagem;
+        _args_submeter_pagina_confirma_retorno = pExecutaPost;
+        _args_campo_retorno = pIdCampoRetorno;
+        _args_cancelar = pPermiteCallbackCancelar;
+
+        var modal = window.open(pPagina, '' + pIdCampoRetorno + '', 'toolbar=no ,modal=yes, status=no, titlebar=no, menubar=no,width=' + pLargura + ', height=' + pAltura + ', top=' + top + ',left=' + left);
+        bloquearTela(modal);
+    }
+
+}
+
+// Chama uma tela de Confirmação
+function Confirma(pMensagem, pPagina, pIdCampoRetorno, pLargura, pAltura, pExecutaPost) {
+
+    console.log(pMensagem);
+    console.log(pPagina);
+    console.log(pIdCampoRetorno);
+
+    if (pPagina == null) {
+        pPagina = caminhoRaiz + "Mensagem.aspx";
+    }
+
+    if (pLargura == null) {
+        pLargura = 400;
+    }
+
+    if (pAltura == null) {
+
+        pAltura = 200;
+    }
+
+    var argumentos;
+
+    if (navigator.appName == "Microsoft Internet Explorer") {
+
+        argumentos = new Array(3);
+        argumentos[0] = self;
+        argumentos[1] = pMensagem;
+
+        window.showModalDialog(pPagina, argumentos, "dialogWidth:'" + pLargura + "px';dialogHeight:'" + pAltura + "px'; toolbar='no';directories='no';status='no';menubar=no;scrollbars='no';resizable='no'");
+
+        if (pExecutaPost) {
+
+            $(self.document).ready(function () {
+
+                var $campo = $('#' + pIdCampoRetorno + '');
+
+                $campo.val(argumentos[2]);
+
+                self.document.all.aspnetForm.submit();
+
+            });
+        }
+
+        return argumentos[2];
+    }
+    else {
+        
+        argumentos = new Array(3);
+        argumentos[0] = self;
+        argumentos[1] = pMensagem;
+
+        var left = (screen.width / 2) - (pLargura / 2);
+        var top = (screen.height / 2) - (pAltura / 2);
+
+        _args_mensagem = pMensagem;
+        _args_submeter_pagina_confirma_retorno = pExecutaPost;
+        _args_campo_retorno = pIdCampoRetorno;                
+
+        var modal = window.open(pPagina, '' + pIdCampoRetorno + '', 'toolbar=no ,modal=yes, status=no, titlebar=no, menubar=no,width=' + pLargura + ', height=' + pAltura + ', top=' + top + ',left=' + left);
+        bloquearTela(modal);
+
+        return _args_retorno_confirma;
+    }
+}
+
+function ConfirmaRetorno(retorno, idCampoRetorno, submeterPagina) {
+
+    $('#' + idCampoRetorno + '').val(retorno);
+
+    if (submeterPagina) {
+
+        self.document.all.aspnetForm.submit();
+    }
+}
+
+
+// Mostra uma janela de Alerta
+function Alerta(pMensagem, pLargura, pAltura) {
+
+    var argumentos;
+
+    if (ie != null && ie < 10) {
+        argumentos = new Array(3);
+        argumentos[0] = self;
+        argumentos[1] = pMensagem;
+
+        window.showModalDialog(caminhoRaiz + "Alerta.aspx", argumentos, "dialogWidth:'" + pLargura + "px';dialogHeight:'" + pAltura + "px'; toolbar='no';directories='no';status='no';menubar='no';scrollbars='no';resizable='no'");
+    }
+    else {
+
+        argumentos = new Array(3);
+        argumentos[0] = self;
+        argumentos[1] = pMensagem;
+
+        var left = (screen.width / 2) - (pLargura / 2);
+        var top = (screen.height / 2) - (pAltura / 2);
+
+        _args_sucesso = pSucesso;
+        _args_mensagem = pMensagem;
+
+        var modal = window.open(caminhoRaiz + "Alerta.aspx", 'Resource', 'toolbar=no ,modal=yes, status=no, titlebar=no, menubar=no,width=' + pLargura + ', height=' + pAltura + ', top=' + top + ',left=' + left);
+        bloquearTela(modal);
+    }
+}
+
+function AlertaRedirecionado(pLargura, pAltura) {
+
+    var left = (screen.width / 2) - (pLargura / 2);
+    var top = (screen.height / 2) - (pAltura / 2);
+
+    var modal = window.open(caminhoRaiz + "AlertaRedirecionando.aspx", 'Aviso', 'toolbar=no ,modal=yes, status=no, titlebar=no, menubar=no,width=' + pLargura + ', height=' + pAltura + ', top=' + top + ',left=' + left);
+    bloquearTela(modal);
+}
+
+// Mostra uma janela de Alerta
+function Alerta(pMensagem, pLargura, pAltura, pSucesso) {
+
+    var argumentos;
+
+    if (ie != null && ie < 10) {
+        argumentos = new Array(3);
+        argumentos[0] = self;
+        argumentos[1] = pMensagem;
+        argumentos[2] = pSucesso;
+
+        window.showModalDialog(caminhoRaiz + "Alerta.aspx", argumentos, "dialogWidth:'" + pLargura + "px';dialogHeight:'" + pAltura + "px'; toolbar='no';directories='no';status='no';menubar=no;scrollbars='no';resizable='no'");
+    }
+    else {
+
+        argumentos = new Array(3);
+        argumentos[0] = self;
+        argumentos[1] = pMensagem;
+        argumentos[2] = pSucesso;
+
+        var left = (screen.width / 2) - (pLargura / 2);
+        var top = (screen.height / 2) - (pAltura / 2);
+
+        _args_sucesso = pSucesso;
+        _args_mensagem = pMensagem;
+
+        var modal = window.open(caminhoRaiz + "Alerta.aspx", 'Resource', 'toolbar=no ,modal=yes, status=no, titlebar=no, menubar=no,width=' + pLargura + ', height=' + pAltura + ', top=' + top + ',left=' + left);
+        bloquearTela(modal);
+    }
+}
+
+// Mostra uma janela de Alerta
+function Alerta(pMensagem, pLargura, pAltura, pSucesso, pCallbackFuncao) {
+
+    var argumentos;
+
+    if (ie != null && ie < 10) {
+        argumentos = new Array(4);
+        argumentos[0] = self;
+        argumentos[1] = pMensagem;
+        argumentos[2] = pSucesso;
+        argumentos[3] = pCallbackFuncao;
+
+        window.showModalDialog(caminhoRaiz + "Alerta.aspx", argumentos, "dialogWidth:'" + pLargura + "px';dialogHeight:'" + pAltura + "px'; toolbar='no';directories='no';status='no';menubar=no;scrollbars='no';resizable='no'");
+    }
+    else {
+
+
+        var left = (screen.width / 2) - (pLargura / 2);
+        var top = (screen.height / 2) - (pAltura / 2);
+
+        _args_sucesso = pSucesso;
+        _args_mensagem = pMensagem;
+        _args_retorno_script = pCallbackFuncao;
+
+        var modal = window.open(caminhoRaiz + "Alerta.aspx", 'Resource', 'toolbar=no ,modal=yes, status=no, titlebar=no, menubar=no,width=' + pLargura + ', height=' + pAltura + ', top=' + top + ',left=' + left);
+        bloquearTela(modal);
+    }
+}
+
+// Abre uma janela PopUp
+function MostraPopUp(pPagina, pLargura, pAltura) {
+
+    var left = (screen.width / 2) - (pLargura / 2);
+    var top = (screen.height / 2) - (pAltura / 2);
+
+    window.open(pPagina, 'pagina', "height=" + pAltura + "px,width=" + pLargura + "px,scrollbars=yes,toolbar=no,directories=no,status=no,menubar=no,resizable=yes,top=" + top + ",left=" + left);
+
+}
+
+
+function LimparCamposRetornos() {
+
+    var _args_mensagem = '';
+    var _args_sucesso = '';
+    var _args_retorno_confirma = '';
+    var _args_submeter_pagina_confirma_retorno = '';
+    var _args_campo_retorno = '';
+
+}
+
+
+function validarProtocolo(protocolo, digito) {
+    var _digito = calculaDigitoMod11(protocolo, 1, 9, true);
+
+    return _digito == digito;
+}
+
+function calculaDigitoMod11(dado, numDig, limMult, x10) {
+
+    var mult, soma, i, n, dig;
+
+    if (!x10) numDig = 1;
+    for (n = 1; n <= numDig; n++) {
+        soma = 0;
+        mult = 2;
+        for (i = dado.length - 1; i >= 0; i--) {
+            soma += (mult * parseInt(dado.charAt(i)));
+            if (++mult > limMult) mult = 2;
+        }
+        if (x10) {
+            dig = ((soma * 10) % 11) % 10;
+        } else {
+            dig = soma % 11;
+            if (dig == 10) dig = "X";
+        }
+        dado += (dig);
+    }
+    return dado.substr(dado.length - numDig, numDig);
+}
+
+
+var ie = (function () {
+    var v = 3,
+    div = document.createElement('div'),
+    all = div.getElementsByTagName('i');
+
+    while (
+            div.innerHTML = '<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',
+            all[0]
+        );
+    if (v <= 4) {
+        var match = navigator.userAgent.match(/(?:MSIE |Trident\/.*; rv:|Edge\/)(\d+)/);
+        v = match ? parseInt(match[1]) : undefined;
+    }
+
+    return v !== 'undefined' ? v : null;
+}());

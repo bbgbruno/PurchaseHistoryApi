@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<!-- saved from url=(0150)https://nfce.set.rn.gov.br/portalDFE/NFCe/mDadosNFCeV2.aspx?chNFCe=24260505248755000123651120001068781307073880&Token=C31C7E7256AB5A8E1431959ADB486C9D -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>
+	NFC-e Consulta para dispositivos móveis
+</title><link rel="shortcut icon" href="https://nfce.set.rn.gov.br/imagens/logonfe.gif">
+    <script src="./NFC-e Consulta para dispositivos móveis_files/Carcarah.js.download"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        .container {
+            width: 90%;
+            margin: auto;
+        }
+
+        .bloco {
+            margin: 7px 3px 7px 3px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 7px;
+            background-color: white;
+            max-width: 800px;
+            box-shadow: 5px 5px 7px #e6e6e6;            
+        }
+
+        .carimbo {
+            z-index: 999;
+            width: 100%;
+            max-width: 800px;
+            position: absolute;
+            float: left;
+            display: block;
+            right: 0px;
+            left: 0px;
+            top: 0px;
+            bottom: 0px;
+            margin-top: 0;
+            margin-bottom: 0;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        table {
+            font-size: 10px;
+        }
+
+            table.itens td {
+                border-bottom-color: lightgray;
+                border-bottom-style: solid;
+                border-bottom-width: 1px;
+                min-width: 2%;
+                padding-top: 4px;
+                padding-bottom: 4px;
+            }
+
+        .fixed {
+            top: 0;
+            position: fixed;
+            width: auto;
+            display: none;
+            border: none;
+        }
+
+        .scrollMore {
+            margin-top: 600px;
+        }
+
+        .up {
+            cursor: pointer;
+        }
+
+        @media print {
+            .no-print, .no-print * {
+                display: none !important;
+            }
+        }
+
+        .auto-style1 {
+            width: 100%;
+        }
+
+        .botao {
+            cursor: pointer;
+            border: 0;
+            padding: 5px;
+            background-color: #006dcc;
+            color: white;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body style="background-color: #f2f2f2; font-family: Arial; font-size: 12px;">
+    <form method="post" action="https://nfce.set.rn.gov.br/portalDFE/NFCe/mDadosNFCeV2.aspx?chNFCe=24260505248755000123651120001068781307073880&amp;Token=C31C7E7256AB5A8E1431959ADB486C9D" id="form1">
+<div class="aspNetHidden">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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">
+</div>
+
+<div class="aspNetHidden">
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="CAFDC37D">
+	<input type="hidden" name="__VIEWSTATEENCRYPTED" id="__VIEWSTATEENCRYPTED" value="">
+</div>
+
+        <table style="width: 100%;">
+            <tbody><tr>
+                <td>
+                    
+
+                            <div id="divConteudoDanfe">
+                                <div class="bloco">
+                                    <table>
+                                        <tbody><tr>
+                                            <td>
+                                                <img src="./NFC-e Consulta para dispositivos móveis_files/brasao_colorido_78px.gif" width="48"></td>
+                                            <td>
+                                                <b>GOVERNO DO ESTADO DO RIO GRANDE DO NORTE</b><br>
+                                                SECRETARIA DE ESTADO DA TRIBUTAÇÃO
+                                            </td>
+                                        </tr>
+                                    </tbody></table>
+                                </div>
+                                <div class="bloco">
+                                    <table>
+                                        <tbody><tr>
+                                            <td>
+                                                <img src="./NFC-e Consulta para dispositivos móveis_files/logoNFCe.png" alt="NFC-e" width="48" style="text-align: center"></td>
+                                            <td>DANFE NFC-e - Documento Auxiliar da Nota Fiscal do Consumidor Eletrônica<br>
+                                                <b>
+                                                    <span id="lblNumeroSerie">NÚMERO: 106878 SÉRIE: 112</span></b>
+                                            </td>
+                                        </tr>
+                                    </tbody></table>
+                                </div>
+
+                                
+
+                                <div class="bloco">
+                                    <table id="tabela_info">
+                                        <tbody><tr>
+                                            <td><b>Emitente:</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <span id="lblRazaoSocialEmitente">RAZÃO SOCIAL: Comvene-Comercial Veneza Ltda</span>
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td>
+                                                <span id="lblCPFCNPJEmitente">CNPJ: 05.248.755/0001-23</span>
+                                                <span id="lblInscricaoEstadualEmitente"> | IE: 20.092.688-8</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <span id="lblEnderecoEmitente">ENDEREÇO: RUA DR ALVARO OZORIO DE ALMEIDA, 426, PAJUCARA II, NATAL, RN, 59131-080</span>
+                                            </td>
+                                        </tr>
+                                    </tbody></table>
+                                </div>
+
+                                <div class="bloco">
+                                    <table>
+                                        <tbody><tr>
+                                            <td><b>Destinatário:
+                            <span id="lblConsumidorNaoIdentificado">CONSUMIDOR NÃO IDENTIFICADO</span></b></td>
+                                        </tr>
+                                        
+                                    </tbody></table>
+                                </div>
+
+                                <div class="bloco">
+                                    <table id="tbItensList" class="itens" cellspacing="0" style="width:100%;border-collapse:collapse;">
+	<tbody><tr>
+		<td>
+                                            </td><td style="font-weight: bold; width: 5%">Item</td>
+                                            <td style="font-weight: bold; width: 45%">Descrição</td>
+                                            <td style="font-weight: bold; width: 10%">Qtde.</td>
+                                            <td style="font-weight: bold; text-align: center; width: 10%">Unid.</td>
+                                            <td style="font-weight: bold; width: 10%; text-align: right;">Vl. unid.</td>
+                                            <td style="font-weight: bold; width: 10%; text-align: right;">Desconto</td>
+                                            <td style="font-weight: bold; width: 15%; text-align: right;">Vl. total</td>
+                                        
+	</tr><tr>
+		<td>
+                                            </td><td>
+                                                <span id="tbItensList_lblTbItensCodigo_0">001</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensDescricao_0">CENOURA KG</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensQtde_0">1,055</span></td>
+                                            <td style="text-align: center">
+                                                <span id="tbItensList_lblTbItensUnidade_0">KG</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorUnid_0">7,98</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbDesconto_0">0,00</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorTotal_0">8,42</span></td>
+                                        
+	</tr><tr>
+		<td>
+                                            </td><td>
+                                                <span id="tbItensList_lblTbItensCodigo_1">002</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensDescricao_1">TOMATE LONGA VIDA KG</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensQtde_1">0,63</span></td>
+                                            <td style="text-align: center">
+                                                <span id="tbItensList_lblTbItensUnidade_1">KG</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorUnid_1">12,69</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbDesconto_1">0,00</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorTotal_1">7,99</span></td>
+                                        
+	</tr><tr>
+		<td>
+                                            </td><td>
+                                                <span id="tbItensList_lblTbItensCodigo_2">003</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensDescricao_2">TANGERINA KG IMP</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensQtde_2">0,29</span></td>
+                                            <td style="text-align: center">
+                                                <span id="tbItensList_lblTbItensUnidade_2">KG</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorUnid_2">10,79</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbDesconto_2">0,00</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorTotal_2">3,13</span></td>
+                                        
+	</tr><tr>
+		<td>
+                                            </td><td>
+                                                <span id="tbItensList_lblTbItensCodigo_3">004</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensDescricao_3">SALSICHA PERDIGAO KG HOT DOG RESF</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensQtde_3">0,534</span></td>
+                                            <td style="text-align: center">
+                                                <span id="tbItensList_lblTbItensUnidade_3">KG</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorUnid_3">21,99</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbDesconto_3">0,00</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorTotal_3">11,74</span></td>
+                                        
+	</tr><tr>
+		<td>
+                                            </td><td>
+                                                <span id="tbItensList_lblTbItensCodigo_4">005</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensDescricao_4">PIMENTAO VERDE KG</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensQtde_4">0,235</span></td>
+                                            <td style="text-align: center">
+                                                <span id="tbItensList_lblTbItensUnidade_4">KG</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorUnid_4">12,49</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbDesconto_4">0,00</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorTotal_4">2,94</span></td>
+                                        
+	</tr><tr>
+		<td>
+                                            </td><td>
+                                                <span id="tbItensList_lblTbItensCodigo_5">006</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensDescricao_5">MINI PUDIM REDE MAIS KG</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensQtde_5">0,128</span></td>
+                                            <td style="text-align: center">
+                                                <span id="tbItensList_lblTbItensUnidade_5">KG</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorUnid_5">44,99</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbDesconto_5">0,00</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorTotal_5">5,76</span></td>
+                                        
+	</tr><tr>
+		<td>
+                                            </td><td>
+                                                <span id="tbItensList_lblTbItensCodigo_6">007</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensDescricao_6">PAO MASSA FINA KG</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensQtde_6">0,256</span></td>
+                                            <td style="text-align: center">
+                                                <span id="tbItensList_lblTbItensUnidade_6">KG</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorUnid_6">14,99</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbDesconto_6">0,00</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorTotal_6">3,84</span></td>
+                                        
+	</tr><tr>
+		<td>
+                                            </td><td>
+                                                <span id="tbItensList_lblTbItensCodigo_7">008</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensDescricao_7">PAO MINUTO REDE MAIS KG</span></td>
+                                            <td>
+                                                <span id="tbItensList_lblTbItensQtde_7">0,212</span></td>
+                                            <td style="text-align: center">
+                                                <span id="tbItensList_lblTbItensUnidade_7">KG</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorUnid_7">21,99</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbDesconto_7">0,00</span></td>
+                                            <td style="text-align: right">
+                                                <span id="tbItensList_lblTbItensValorTotal_7">4,66</span></td>
+                                        
+	</tr>
+</tbody></table>
+                                </div>
+
+                                <div class="bloco">
+
+                                    <table class="items" style="width: 100%;">
+                                        <tbody><tr>
+                                            <td style="min-width: 50px">
+                                                <b>Valor Total dos Produtos (R$)</b>
+                                            </td>
+                                            <td style="text-align: right">
+                                                <span id="lblValorTotal">48,48</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <b>Valor Descontos (R$)</b>
+                                            </td>
+                                            <td style="text-align: right">
+                                                <span id="lblValorDesconto">0,00</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <b>Valor Pago (R$)</b>
+                                            </td>
+                                            <td style="text-align: right">
+                                                <span id="lblValorPago">48,48</span>
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td valign="top">
+                                                <b>Forma Pagamento</b>
+                                            </td>
+                                            <td style="text-align: right">
+                                                <span id="lblFormaPagamento">Cartão de Crédito</span>
+                                                
+                                                <div style="padding-top: 3px; padding-bottom: 3px;">
+                                                    
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody></table>
+
+                                </div>
+
+                                <div class="bloco" style="text-align: center; font-size: 10px">
+                                    <b>CHAVE DE ACESSO NFC-e</b><br>
+                                    <span id="lblChave">24260505248755000123651120001068781307073880</span><br>
+                                    <span id="lblDataEmissao">Data de Emissão: 06/05/2026 19:04:54 </span>&nbsp;<br>
+                                    <span id="lblDataAutorizacaoDenegacao">Data de Autorização: 06/05/2026 19:05:20 </span><br>
+                                    <span id="lblProtocolo">Protocolo: 224260160911302</span><br>
+                                    <span id="lblSituacao">Situação: Autorizada</span><br>
+
+                                    
+                                </div>
+
+                                
+                            </div>
+                            <div class="bloco" style="box-shadow: none; color: none; font-size: 9px; color: gray; background-color: #f2f2f2; text-align: center;">
+                                <span style="margin-bottom: 2px">Consulta realizada em 15/05/2026 22:21:19</span>
+                                <div>Visualizador Mobile NFC-e: Versão 3.00</div>
+                                <div>
+                                    <span id="lblTicket"></span>
+                                </div>
+                            </div>
+                        
+                </td>
+            </tr>
+        </tbody></table>
+    </form>
+
+
+</body></html>
