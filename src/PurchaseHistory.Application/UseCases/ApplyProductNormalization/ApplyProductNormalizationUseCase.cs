@@ -39,49 +39,50 @@ public class ApplyProductNormalizationUseCase
 
         foreach (var product in allProducts)
         {
-            var substituted = await _normalizationService.NormalizeWithSubstitutionsAsync(product.NormalizedName);
+            var originalName = product.NormalizedName;
+            var substituted = await _normalizationService.NormalizeWithSubstitutionsAsync(originalName);
 
-            if (substituted == product.NormalizedName)
+            if (substituted == originalName)
                 continue;
 
-            Product? targetProduct;
+            var existing = await _productRepository.FindByNameAsync(substituted);
 
-            targetProduct = await _productRepository.FindByNameAsync(substituted);
-
-            if (targetProduct == null)
+            if (existing != null && existing.Id != product.Id)
             {
-                targetProduct = new Product
+                var items = await _purchaseItemRepository.GetByProductIdAsync(product.Id);
+                var itemsList = items.ToList();
+                var itemCount = itemsList.Count;
+
+                if (itemCount > 0)
                 {
-                    NormalizedName = substituted,
-                    CreatedAt = DateTime.UtcNow
-                };
-                var newId = await _productRepository.CreateAsync(targetProduct);
-                targetProduct.Id = newId;
+                    await _purchaseItemRepository.RedirectProductIdAsync(product.Id, existing.Id);
+                    totalItemsRedirected += itemCount;
+                }
+
+                await _productRepository.DeleteAsync(product.Id);
+                totalProductsRemoved++;
+
+                appliedRules.Add(new AppliedRuleResult
+                {
+                    OriginalText = originalName,
+                    ReplacementText = substituted,
+                    ItemsRedirected = itemCount,
+                    ProductRemoved = true
+                });
             }
-
-            if (product.Id == targetProduct.Id)
-                continue;
-
-            var items = await _purchaseItemRepository.GetByProductIdAsync(product.Id);
-            var itemsList = items.ToList();
-            var itemCount = itemsList.Count;
-
-            if (itemCount > 0)
+            else
             {
-                await _purchaseItemRepository.RedirectProductIdAsync(product.Id, targetProduct.Id);
-                totalItemsRedirected += itemCount;
+                product.NormalizedName = substituted;
+                await _productRepository.UpdateAsync(product);
+
+                appliedRules.Add(new AppliedRuleResult
+                {
+                    OriginalText = originalName,
+                    ReplacementText = substituted,
+                    ItemsRedirected = 0,
+                    ProductRemoved = false
+                });
             }
-
-            await _productRepository.DeleteAsync(product.Id);
-            totalProductsRemoved++;
-
-            appliedRules.Add(new AppliedRuleResult
-            {
-                OriginalText = product.NormalizedName,
-                ReplacementText = substituted,
-                ItemsRedirected = itemCount,
-                ProductRemoved = true
-            });
         }
 
         /*
