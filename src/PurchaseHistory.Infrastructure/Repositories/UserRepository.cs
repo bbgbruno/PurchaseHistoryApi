@@ -59,11 +59,23 @@ public class UserRepository : IUserRepository
             UPDATE Users
             SET Name = @Name,
                 Email = @Email,
+                PasswordHash = @PasswordHash,
                 IsActive = @IsActive
             WHERE Id = @Id";
 
         using var connection = _connectionFactory.CreateConnection();
         await connection.ExecuteAsync(sql, user);
+    }
+
+    public async Task UpdatePasswordByEmailAsync(string email, string passwordHash)
+    {
+        const string sql = @"
+            UPDATE Users
+            SET PasswordHash = @PasswordHash
+            WHERE Email = @Email";
+
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.ExecuteAsync(sql, new { Email = email, PasswordHash = passwordHash });
     }
 
     public async Task DeleteAsync(Guid id)
