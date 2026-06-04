@@ -15,9 +15,9 @@ public class SearchProductsUseCase
     }
 
     public async Task<IEnumerable<ProductSearchResultDto>>
-        Handle(string term)
+        Handle(string term, Guid userId)
     {
         return await _repository
-            .SearchProductsAsync(term);
+            .SearchProductsAsync(term, userId);
     }
 }

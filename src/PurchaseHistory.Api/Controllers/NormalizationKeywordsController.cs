@@ -6,6 +6,7 @@ namespace PurchaseHistory.Api.Controllers;
 
 [ApiController]
 [Route("api/normalization/keywords")]
+[Microsoft.AspNetCore.Authorization.Authorize]
 public class NormalizationKeywordsController : ControllerBase
 {
     [HttpGet]

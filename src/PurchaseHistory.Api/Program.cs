@@ -1,16 +1,19 @@
-using PurchaseHistory.Domain.Interfaces;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using PurchaseHistory.Api.Auth;
+using PurchaseHistory.Application.UseCases.ApplyProductNormalization;
+using PurchaseHistory.Application.UseCases.GetProductDetails;
 using PurchaseHistory.Application.UseCases.GetProducts;
+using PurchaseHistory.Application.UseCases.SearchProducts;
 using PurchaseHistory.Application.UseCases.UploadCouponHtml;
+using PurchaseHistory.Domain.Interfaces;
+using PurchaseHistory.Domain.Interfaces.Repositories;
+using PurchaseHistory.Domain.Interfaces.Services;
+using PurchaseHistory.Infrastructure.Data;
 using PurchaseHistory.Infrastructure.Parsers;
 using PurchaseHistory.Infrastructure.Repositories;
-using PurchaseHistory.Infrastructure.Data;
-using PurchaseHistory.Domain.Interfaces.Repositories;
-using PurchaseHistory.Application.UseCases.SearchProducts;
-using PurchaseHistory.Application.UseCases.GetProductDetails;
-using PurchaseHistory.Application.UseCases.ApplyProductNormalization;
-using PurchaseHistory.Domain.Interfaces.Services;
 using PurchaseHistory.Infrastructure.Services;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +24,35 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
+
+#endregion
+
+#region JWT
+
+var jwtSection = builder.Configuration.GetSection("JwtSettings");
+builder.Services.Configure<JwtSettings>(jwtSection);
+
+var jwtSettings = jwtSection.Get<JwtSettings>()
+    ?? throw new InvalidOperationException("JwtSettings não configurado.");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
+    };
+});
 
 #endregion
 
@@ -38,7 +70,6 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICouponImportRepository, CouponImportRepository>();
 builder.Services.AddScoped<IProductNormalizationService, ProductNormalizationService>();
-
 
 #endregion
 
@@ -79,6 +110,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowFlutter");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

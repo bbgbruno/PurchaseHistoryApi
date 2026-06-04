@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using PurchaseHistory.Api.Auth;
 using PurchaseHistory.Application.UseCases.GetProductDetails;
 using PurchaseHistory.Application.UseCases.SearchProducts;
 
@@ -6,6 +8,7 @@ namespace PurchaseHistory.Api.Controllers;
 
 [ApiController]
 [Route("api/products")]
+[Authorize]
 public class ProductsController : ControllerBase
 {
     [HttpGet("search")]
@@ -13,18 +16,19 @@ public class ProductsController : ControllerBase
         [FromQuery] string term,
         [FromServices] SearchProductsUseCase useCase)
     {
-        var result =
-            await useCase.Handle(term);
+        var userId = User.GetUserId();
+        var result = await useCase.Handle(term, userId);
 
         return Ok(result);
     }
 
-
     [HttpGet("history/{productId}")]
-    public async Task<IActionResult> GetDetails(Guid productId, [FromServices] GetProductDetailsUseCase useCase)
+    public async Task<IActionResult> GetDetails(
+        Guid productId,
+        [FromServices] GetProductDetailsUseCase useCase)
     {
-        var result =
-            await useCase.Handle(productId);
+        var userId = User.GetUserId();
+        var result = await useCase.Handle(productId, userId);
 
         if (result == null)
             return NotFound();

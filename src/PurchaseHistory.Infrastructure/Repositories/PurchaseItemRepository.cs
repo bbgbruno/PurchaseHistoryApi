@@ -58,46 +58,27 @@ public class PurchaseItemRepository
         await connection.ExecuteAsync(sql, items);
     }
 
-    public async Task<IEnumerable<ProductSearchResultDto>> SearchProductsAsync(string term)
+    public async Task<IEnumerable<ProductSearchResultDto>> SearchProductsAsync(string term, Guid userId)
     {
-
         const string sql = @"
-    SELECT
-
-        pi.ProductId,
-
-        pi.Id AS PurchaseItemId,
-
-        pr.NormalizedName AS ProductName,
-
-        pi.Quantity,
-
-        pi.Unit,
-
-        pi.UnitPrice,
-
-        pi.TotalPrice,
-
-        p.PurchaseDate,
-
-        s.Name AS StoreName
-
-    FROM PurchaseItems pi
-
-    INNER JOIN Purchases p
-        ON p.Id = pi.PurchaseId
-
-    INNER JOIN Stores s
-        ON s.Id = p.StoreId
-
-    INNER JOIN Products pr
-        ON pr.Id = pi.ProductId
-
-    WHERE pr.NormalizedName
-        ILIKE @Search
-
-    ORDER BY p.PurchaseDate DESC
-    LIMIT 50";
+            SELECT
+                pi.ProductId,
+                pi.Id AS PurchaseItemId,
+                pr.NormalizedName AS ProductName,
+                pi.Quantity,
+                pi.Unit,
+                pi.UnitPrice,
+                pi.TotalPrice,
+                p.PurchaseDate,
+                s.Name AS StoreName
+            FROM PurchaseItems pi
+            INNER JOIN Purchases p ON p.Id = pi.PurchaseId
+            INNER JOIN Stores s ON s.Id = p.StoreId
+            INNER JOIN Products pr ON pr.Id = pi.ProductId
+            WHERE pr.NormalizedName ILIKE @Search
+              AND p.UserId = @UserId
+            ORDER BY p.PurchaseDate DESC
+            LIMIT 50";
 
         using var connection =
             _connectionFactory.CreateConnection();
@@ -106,7 +87,8 @@ public class PurchaseItemRepository
             sql,
             new
             {
-                Search = $"%{term}%"
+                Search = $"%{term}%",
+                UserId = userId
             });
     }
 
@@ -135,37 +117,23 @@ public class PurchaseItemRepository
         return await connection.QueryAsync<PurchaseItem>(sql, new { ProductId = productId });
     }
 
-    public async Task<ProductDetailsDto?> GetProductDetailsAsync(Guid productId)
+    public async Task<ProductDetailsDto?> GetProductDetailsAsync(Guid productId, Guid userId)
     {
         const string sql = @"
-
-    SELECT
-
-        pi.ProductId,
-
-        pi.OriginalDescription AS ProductName,
-
-        pi.UnitPrice,
-
-        pi.TotalPrice,
-
-        pi.Quantity,
-
-        s.Name AS StoreName,
-
-        p.PurchaseDate
-
-    FROM PurchaseItems pi
-
-    INNER JOIN Purchases p
-        ON p.Id = pi.PurchaseId
-
-    INNER JOIN Stores s
-        ON s.Id = p.StoreId
-
-    WHERE pi.ProductId = @ProductId
-
-    ORDER BY p.PurchaseDate DESC";
+            SELECT
+                pi.ProductId,
+                pi.OriginalDescription AS ProductName,
+                pi.UnitPrice,
+                pi.TotalPrice,
+                pi.Quantity,
+                s.Name AS StoreName,
+                p.PurchaseDate
+            FROM PurchaseItems pi
+            INNER JOIN Purchases p ON p.Id = pi.PurchaseId
+            INNER JOIN Stores s ON s.Id = p.StoreId
+            WHERE pi.ProductId = @ProductId
+              AND p.UserId = @UserId
+            ORDER BY p.PurchaseDate DESC";
 
         using var connection =
             _connectionFactory.CreateConnection();
@@ -175,7 +143,8 @@ public class PurchaseItemRepository
                 sql,
                 new
                 {
-                    ProductId = productId
+                    ProductId = productId,
+                    UserId = userId
                 })
         ).ToList();
 
@@ -204,7 +173,7 @@ public class PurchaseItemRepository
         };
     }
 
-    public async Task<IEnumerable<PurchaseItem>> GetByPurchaseIdAsync(Guid purchaseId)
+    public async Task<IEnumerable<PurchaseItem>> GetByPurchaseIdAsync(Guid purchaseId, Guid userId)
     {
         const string sql = @"
             SELECT
@@ -212,14 +181,16 @@ public class PurchaseItemRepository
                 pr.CategoryId
             FROM PurchaseItems pi
             LEFT JOIN Products pr ON pr.Id = pi.ProductId
+            INNER JOIN Purchases p ON p.Id = pi.PurchaseId
             WHERE pi.PurchaseId = @PurchaseId
+              AND p.UserId = @UserId
             ORDER BY pi.OriginalDescription";
 
         using var connection = _connectionFactory.CreateConnection();
-        return await connection.QueryAsync<PurchaseItem>(sql, new { PurchaseId = purchaseId });
+        return await connection.QueryAsync<PurchaseItem>(sql, new { PurchaseId = purchaseId, UserId = userId });
     }
 
-    public async Task<PurchaseItem?> GetByIdAsync(Guid id)
+    public async Task<PurchaseItem?> GetByIdAsync(Guid id, Guid userId)
     {
         const string sql = @"
             SELECT
@@ -227,9 +198,11 @@ public class PurchaseItemRepository
                 pr.CategoryId
             FROM PurchaseItems pi
             LEFT JOIN Products pr ON pr.Id = pi.ProductId
-            WHERE pi.Id = @Id";
+            INNER JOIN Purchases p ON p.Id = pi.PurchaseId
+            WHERE pi.Id = @Id
+              AND p.UserId = @UserId";
 
         using var connection = _connectionFactory.CreateConnection();
-        return await connection.QueryFirstOrDefaultAsync<PurchaseItem>(sql, new { Id = id });
+        return await connection.QueryFirstOrDefaultAsync<PurchaseItem>(sql, new { Id = id, UserId = userId });
     }
 }

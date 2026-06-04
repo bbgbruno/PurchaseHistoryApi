@@ -7,6 +7,7 @@ namespace PurchaseHistory.Api.Controllers;
 
 [ApiController]
 [Route("api/normalization/names")]
+[Microsoft.AspNetCore.Authorization.Authorize]
 public class NormalizationNameController : ControllerBase
 {
     [HttpGet]

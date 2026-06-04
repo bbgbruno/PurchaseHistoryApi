@@ -1,17 +1,20 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PurchaseHistory.Api.Auth;
 using PurchaseHistory.Domain.Interfaces.Repositories;
 
 namespace PurchaseHistory.Api.Controllers;
 
 [ApiController]
 [Route("api/purchases")]
+[Authorize]
 public class PurchasesController : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll(
-        [FromQuery] Guid? userId,
         [FromServices] IPurchaseRepository repository)
     {
+        var userId = User.GetUserId();
         var purchases = await repository.GetAllAsync(userId);
         return Ok(purchases);
     }
@@ -21,7 +24,8 @@ public class PurchasesController : ControllerBase
         Guid id,
         [FromServices] IPurchaseItemRepository repository)
     {
-        var items = await repository.GetByPurchaseIdAsync(id);
+        var userId = User.GetUserId();
+        var items = await repository.GetByPurchaseIdAsync(id, userId);
         return Ok(items);
     }
 
@@ -30,7 +34,8 @@ public class PurchasesController : ControllerBase
         Guid id,
         [FromServices] IPurchaseRepository repository)
     {
-        await repository.DeleteAsync(id);
+        var userId = User.GetUserId();
+        await repository.DeleteAsync(id, userId);
         return NoContent();
     }
 
@@ -40,7 +45,8 @@ public class PurchasesController : ControllerBase
         [FromBody] UpdatePurchaseDateRequest request,
         [FromServices] IPurchaseRepository repository)
     {
-        var updated = await repository.UpdatePurchaseDateAsync(id, request.PurchaseDate);
+        var userId = User.GetUserId();
+        var updated = await repository.UpdatePurchaseDateAsync(id, request.PurchaseDate, userId);
         if (!updated)
             return NotFound();
 

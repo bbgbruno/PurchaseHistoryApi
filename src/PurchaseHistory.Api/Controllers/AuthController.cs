@@ -1,16 +1,24 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using PurchaseHistory.Api.Auth;
 using PurchaseHistory.Domain.Interfaces.Repositories;
 
 namespace PurchaseHistory.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
+[Microsoft.AspNetCore.Authorization.AllowAnonymous]
 public class AuthController : ControllerBase
 {
     [HttpPost("login")]
     public async Task<IActionResult> Login(
         [FromBody] LoginRequest request,
-        [FromServices] IUserRepository repository)
+        [FromServices] IUserRepository repository,
+        [FromServices] IOptions<JwtSettings> jwtSettings)
     {
         var user = await repository.GetByEmailAsync(request.Email);
 
@@ -20,8 +28,30 @@ public class AuthController : ControllerBase
         if (!user.IsActive)
             return Unauthorized(new { message = "Usuário inativo." });
 
+        var settings = jwtSettings.Value;
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.Secret));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Name),
+            new Claim(ClaimTypes.Email, user.Email)
+        };
+
+        var token = new JwtSecurityToken(
+            issuer: settings.Issuer,
+            audience: settings.Audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(settings.ExpirationInHours),
+            signingCredentials: credentials
+        );
+
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
         return Ok(new
         {
+            token = tokenString,
             user.Id,
             user.Name,
             user.Email,
