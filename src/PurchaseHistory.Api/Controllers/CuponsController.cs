@@ -19,6 +19,7 @@ public class CuponsController : ControllerBase
     [HttpPost("upload-html")]
     public async Task<IActionResult> UploadHtml(
         IFormFile file,
+        [FromQuery] Guid userId,
         [FromServices] UploadCouponHtmlUseCase useCase)
     {
         try
@@ -39,7 +40,8 @@ public class CuponsController : ControllerBase
 
             var input = new UploadCouponHtmlInput
             {
-                HtmlContent = html
+                HtmlContent = html,
+                UserId = userId
             };
 
             var output =

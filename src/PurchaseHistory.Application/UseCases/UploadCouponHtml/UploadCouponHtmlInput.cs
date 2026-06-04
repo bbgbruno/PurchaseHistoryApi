@@ -7,4 +7,6 @@ public class UploadCouponHtmlInput
 
     public string FileName { get; set; }
         = string.Empty;
+
+    public Guid UserId { get; set; }
 }
