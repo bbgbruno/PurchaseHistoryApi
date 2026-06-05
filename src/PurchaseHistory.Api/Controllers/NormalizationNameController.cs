@@ -62,5 +62,3 @@ public class CreateMappingRequest
     public string ReplacementText { get; set; } = string.Empty;
     public string? MatchType { get; set; }
 }
-
-

@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using PurchaseHistory.Domain.Dtos;
 using PurchaseHistory.Domain.Entities;
 using PurchaseHistory.Domain.Interfaces.Repositories;
@@ -53,9 +53,9 @@ public class PurchaseRepository : IPurchaseRepository
         return purchase.Id;
     }
 
-    public async Task<IEnumerable<PurchaseListDto>> GetAllAsync(Guid? userId = null)
+    public async Task<IEnumerable<PurchaseListDto>> GetAllAsync(Guid userId)
     {
-        var sql = @"
+        const string sql = @"
             SELECT
                 p.Id,
                 p.UserId,
@@ -63,22 +63,16 @@ public class PurchaseRepository : IPurchaseRepository
                 p.TotalValue,
                 s.Name AS StoreName
             FROM Purchases p
-            INNER JOIN Stores s ON s.Id = p.StoreId";
-
-        if (userId.HasValue)
-            sql += " WHERE p.UserId = @UserId";
-
-        sql += " ORDER BY p.PurchaseDate DESC";
+            INNER JOIN Stores s ON s.Id = p.StoreId
+            WHERE p.UserId = @UserId
+            ORDER BY p.PurchaseDate DESC";
 
         using var connection = _connectionFactory.CreateConnection();
 
-        if (userId.HasValue)
-            return await connection.QueryAsync<PurchaseListDto>(sql, new { UserId = userId.Value });
-
-        return await connection.QueryAsync<PurchaseListDto>(sql);
+        return await connection.QueryAsync<PurchaseListDto>(sql, new { UserId = userId });
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id, Guid userId)
     {
         using var connection = _connectionFactory.CreateConnection();
         connection.Open();
@@ -90,8 +84,8 @@ public class PurchaseRepository : IPurchaseRepository
             transaction);
 
         await connection.ExecuteAsync(
-            "DELETE FROM Purchases WHERE Id = @Id",
-            new { Id = id },
+            "DELETE FROM Purchases WHERE Id = @Id AND UserId = @UserId",
+            new { Id = id, UserId = userId },
             transaction);
 
         transaction.Commit();
@@ -106,5 +100,17 @@ public class PurchaseRepository : IPurchaseRepository
         using var connection = _connectionFactory.CreateConnection();
         var count = await connection.ExecuteScalarAsync<int>(sql, new { AccessKey = accessKey });
         return count > 0;
+    }
+
+    public async Task<bool> UpdatePurchaseDateAsync(Guid id, DateTime purchaseDate, Guid userId)
+    {
+        const string sql = @"
+            UPDATE Purchases
+            SET PurchaseDate = @PurchaseDate
+            WHERE Id = @Id AND UserId = @UserId";
+
+        using var connection = _connectionFactory.CreateConnection();
+        var rows = await connection.ExecuteAsync(sql, new { Id = id, PurchaseDate = purchaseDate, UserId = userId });
+        return rows > 0;
     }
 }

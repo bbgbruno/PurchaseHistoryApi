@@ -50,5 +50,4 @@ public class CreateKeywordRequest
 {
     public string OriginalTerm { get; set; } = string.Empty;
     public string ReplacementTerm { get; set; } = string.Empty;
-    
 }

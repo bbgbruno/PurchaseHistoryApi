@@ -1,16 +1,15 @@
-using PurchaseHistory.Domain.Interfaces;
+using PurchaseHistory.Application.UseCases.ApplyProductNormalization;
+using PurchaseHistory.Application.UseCases.GetProductDetails;
 using PurchaseHistory.Application.UseCases.GetProducts;
+using PurchaseHistory.Application.UseCases.SearchProducts;
 using PurchaseHistory.Application.UseCases.UploadCouponHtml;
+using PurchaseHistory.Domain.Interfaces;
+using PurchaseHistory.Domain.Interfaces.Repositories;
+using PurchaseHistory.Domain.Interfaces.Services;
+using PurchaseHistory.Infrastructure.Data;
 using PurchaseHistory.Infrastructure.Parsers;
 using PurchaseHistory.Infrastructure.Repositories;
-using PurchaseHistory.Infrastructure.Data;
-using PurchaseHistory.Domain.Interfaces.Repositories;
-using PurchaseHistory.Application.UseCases.SearchProducts;
-using PurchaseHistory.Application.UseCases.GetProductDetails;
-using PurchaseHistory.Application.UseCases.ApplyProductNormalization;
-using PurchaseHistory.Domain.Interfaces.Services;
 using PurchaseHistory.Infrastructure.Services;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +37,6 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICouponImportRepository, CouponImportRepository>();
 builder.Services.AddScoped<IProductNormalizationService, ProductNormalizationService>();
-
 
 #endregion
 

@@ -10,12 +10,6 @@ namespace PurchaseHistory.Api.Controllers;
 [Route("api/cupons")]
 public class CuponsController : ControllerBase
 {
-    /*
-    ==========================================================
-    UPLOAD HTML
-    ==========================================================
-    */
-
     [HttpPost("upload-html")]
     public async Task<IActionResult> UploadHtml(
         IFormFile file,
@@ -58,12 +52,6 @@ public class CuponsController : ControllerBase
         }
     }
 
-    /*
-    ==========================================================
-    PRODUTOS
-    ==========================================================
-    */
-
     [HttpGet("products")]
     public async Task<IActionResult> GetProducts([FromServices] GetProductsUseCase useCase)
     {
@@ -72,17 +60,12 @@ public class CuponsController : ControllerBase
         return Ok(output);
     }
 
-    /*
-    ==========================================================
-    IMPORTS (chave de acesso)
-    ==========================================================
-    */
-
     [HttpGet("imports/pending")]
     public async Task<IActionResult> GetPending(
+        [FromQuery] Guid userId,
         [FromServices] ICouponImportRepository repository)
     {
-        var items = await repository.GetPendingAsync();
+        var items = await repository.GetPendingAsync(userId);
         return Ok(items);
     }
 
