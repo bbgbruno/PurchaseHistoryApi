@@ -61,11 +61,9 @@ public class CuponsController : ControllerBase
     }
 
     [HttpGet("imports/pending")]
-    public async Task<IActionResult> GetPending(
-        [FromQuery] Guid userId,
-        [FromServices] ICouponImportRepository repository)
+    public async Task<IActionResult> GetPending([FromServices] ICouponImportRepository repository)
     {
-        var items = await repository.GetPendingAsync(userId);
+        var items = await repository.GetPendingAsync();
         return Ok(items);
     }
 

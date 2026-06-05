@@ -29,16 +29,15 @@ public class CouponImportRepository : ICouponImportRepository
         return couponImport.Id;
     }
 
-    public async Task<IEnumerable<CouponImport>> GetPendingAsync(Guid userId)
+    public async Task<IEnumerable<CouponImport>> GetPendingAsync()
     {
         const string sql = @"
             SELECT * FROM CouponsImport
             WHERE Status = 'Pending'
-              AND UserId = @UserId
             ORDER BY CreatedAt DESC";
 
         using var connection = _connectionFactory.CreateConnection();
-        return await connection.QueryAsync<CouponImport>(sql, new { UserId = userId });
+        return await connection.QueryAsync<CouponImport>(sql);
     }
 
     public async Task DeleteAsync(Guid id)
