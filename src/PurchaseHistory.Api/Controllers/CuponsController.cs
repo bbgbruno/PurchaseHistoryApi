@@ -19,6 +19,7 @@ public class CuponsController : ControllerBase
     [HttpPost("upload-html")]
     public async Task<IActionResult> UploadHtml(
         IFormFile file,
+        [FromQuery] Guid userId,
         [FromServices] UploadCouponHtmlUseCase useCase)
     {
         try
@@ -39,7 +40,8 @@ public class CuponsController : ControllerBase
 
             var input = new UploadCouponHtmlInput
             {
-                HtmlContent = html
+                HtmlContent = html,
+                UserId = userId
             };
 
             var output =
@@ -99,10 +101,34 @@ public class CuponsController : ControllerBase
 
         return Ok(new { id, couponImport.AccessKey, couponImport.Status });
     }
+
+    [HttpDelete("imports/{id}")]
+    public async Task<IActionResult> DeleteImport(
+        Guid id,
+        [FromServices] ICouponImportRepository repository)
+    {
+        await repository.DeleteAsync(id);
+        return NoContent();
+    }
+
+    [HttpPatch("imports/{id}/status")]
+    public async Task<IActionResult> UpdateImportStatus(
+        Guid id,
+        [FromBody] UpdateImportStatusRequest request,
+        [FromServices] ICouponImportRepository repository)
+    {
+        await repository.UpdateStatusAsync(id, request.Status);
+        return NoContent();
+    }
 }
 
 public class CreateCouponImportRequest
 {
     public Guid UserId { get; set; }
     public string AccessKey { get; set; } = string.Empty;
+}
+
+public class UpdateImportStatusRequest
+{
+    public string Status { get; set; } = string.Empty;
 }

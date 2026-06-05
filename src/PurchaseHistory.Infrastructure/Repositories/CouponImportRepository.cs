@@ -39,4 +39,20 @@ public class CouponImportRepository : ICouponImportRepository
         using var connection = _connectionFactory.CreateConnection();
         return await connection.QueryAsync<CouponImport>(sql);
     }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        const string sql = @"DELETE FROM CouponsImport WHERE Id = @Id";
+
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.ExecuteAsync(sql, new { Id = id });
+    }
+
+    public async Task UpdateStatusAsync(Guid id, string status)
+    {
+        const string sql = @"UPDATE CouponsImport SET Status = @Status WHERE Id = @Id";
+
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.ExecuteAsync(sql, new { Id = id, Status = status });
+    }
 }

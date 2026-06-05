@@ -29,62 +29,7 @@ public class ApplyProductNormalizationUseCase
         var totalProductsRemoved = 0;
         var appliedRules = new List<AppliedRuleResult>();
 
-        /*
-        ==========================================================
-        SUBSTITUIÇÕES
-        ==========================================================
-        */
-
-        var allProducts = await _productRepository.GetAllAsync();
-
-        foreach (var product in allProducts)
-        {
-            var originalName = product.NormalizedName;
-            var substituted = await _normalizationService.NormalizeWithSubstitutionsAsync(originalName);
-
-            if (substituted == originalName)
-                continue;
-
-            var existing = await _productRepository.FindByNameAsync(substituted);
-
-            if (existing != null && existing.Id != product.Id)
-            {
-                var items = await _purchaseItemRepository.GetByProductIdAsync(product.Id);
-                var itemsList = items.ToList();
-                var itemCount = itemsList.Count;
-
-                if (itemCount > 0)
-                {
-                    await _purchaseItemRepository.RedirectProductIdAsync(product.Id, existing.Id);
-                    totalItemsRedirected += itemCount;
-                }
-
-                await _productRepository.DeleteAsync(product.Id);
-                totalProductsRemoved++;
-
-                appliedRules.Add(new AppliedRuleResult
-                {
-                    OriginalText = originalName,
-                    ReplacementText = substituted,
-                    ItemsRedirected = itemCount,
-                    ProductRemoved = true
-                });
-            }
-            else
-            {
-                product.NormalizedName = substituted;
-                await _productRepository.UpdateAsync(product);
-
-                appliedRules.Add(new AppliedRuleResult
-                {
-                    OriginalText = originalName,
-                    ReplacementText = substituted,
-                    ItemsRedirected = 0,
-                    ProductRemoved = false
-                });
-            }
-        }
-
+       
         /*
         ==========================================================
         MAPPINGS
@@ -136,6 +81,65 @@ public class ApplyProductNormalizationUseCase
                 ProductRemoved = true
             });
         }
+
+        /*
+       ==========================================================
+       SUBSTITUIÇÕES
+       ==========================================================
+       */
+
+        var allProducts = await _productRepository.GetAllAsync();
+
+        foreach (var product in allProducts)
+        {
+            var originalName = product.NormalizedName;
+            var substituted = await _normalizationService.NormalizeWithSubstitutionsAsync(originalName);
+
+            if (substituted == originalName)
+                continue;
+
+            var existing = await _productRepository.FindByNameAsync(substituted);
+
+            if (existing != null && existing.Id != product.Id)
+            {
+                var items = await _purchaseItemRepository.GetByProductIdAsync(product.Id);
+                var itemsList = items.ToList();
+                var itemCount = itemsList.Count;
+
+                if (itemCount > 0)
+                {
+                    await _purchaseItemRepository.RedirectProductIdAsync(product.Id, existing.Id);
+                    totalItemsRedirected += itemCount;
+                }
+
+                await _productRepository.DeleteAsync(product.Id);
+                totalProductsRemoved++;
+
+                appliedRules.Add(new AppliedRuleResult
+                {
+                    OriginalText = originalName,
+                    ReplacementText = substituted,
+                    ItemsRedirected = itemCount,
+                    ProductRemoved = true
+                });
+            }
+            else
+            {
+                product.NormalizedName = substituted;
+                await _productRepository.UpdateAsync(product);
+
+                appliedRules.Add(new AppliedRuleResult
+                {
+                    OriginalText = originalName,
+                    ReplacementText = substituted,
+                    ItemsRedirected = 0,
+                    ProductRemoved = false
+                });
+            }
+        }
+
+
+
 
         return new ApplyProductNormalizationOutput
         {

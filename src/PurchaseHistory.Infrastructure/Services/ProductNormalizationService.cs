@@ -61,33 +61,14 @@ public class ProductNormalizationService
 
         foreach (var sub in substitutions)
         {
-            var original = Normalize(sub.OriginalTerm);
-
-            if (string.IsNullOrWhiteSpace(original))
-                continue;
-
-            var replacement = Normalize(sub.ReplacementTerm);
+            var original = sub.OriginalTerm;
+            var replacement = sub.ReplacementTerm;
 
             text = Regex.Replace(
                 text,
                 $@"\b{Regex.Escape(original)}\b",
                 replacement);
-
         }
-
-        text = Regex.Replace(
-            text,
-            @"\b(TRAD|TRADICIONAL|UND|UN)\b",
-            string.Empty);
-
-        text = text.Replace("GRAMAS", "G");
-        text = text.Replace("GRAMA", "G");
-        text = text.Replace("GR", "G");
-
-        text = Regex.Replace(
-            text,
-            @"\s+",
-            " ");
 
         return text.Trim();
     }

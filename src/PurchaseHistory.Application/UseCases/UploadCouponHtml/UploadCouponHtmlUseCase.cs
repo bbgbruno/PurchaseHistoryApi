@@ -123,6 +123,8 @@ public class UploadCouponHtmlUseCase
         {
             Id = Guid.NewGuid(),
 
+            UserId = input.UserId,
+
             StoreId = storeId,
 
             AccessKey = importedCoupon.AccessKey,
