@@ -10,11 +10,12 @@ public class PurchaseItemsController : ControllerBase
     [HttpPatch("{id}/product-category")]
     public async Task<IActionResult> UpdateProductCategory(
         Guid id,
+        [FromQuery] Guid userId,
         [FromBody] ProductCategoryRequest request,
         [FromServices] IPurchaseItemRepository purchaseItemRepository,
         [FromServices] IProductRepository productRepository)
     {
-        var item = await purchaseItemRepository.GetByIdAsync(id);
+        var item = await purchaseItemRepository.GetByIdAsync(id, userId);
 
         if (item?.ProductId == null)
             return NotFound();

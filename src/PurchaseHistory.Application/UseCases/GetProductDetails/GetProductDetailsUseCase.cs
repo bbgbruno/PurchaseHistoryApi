@@ -15,9 +15,9 @@ public class GetProductDetailsUseCase
     }
 
     public async Task<ProductDetailsDto?>
-        Handle(Guid productId)
+        Handle(Guid productId, Guid userId)
     {
         return await _repository
-            .GetProductDetailsAsync(productId);
+            .GetProductDetailsAsync(productId, userId);
     }
 }
