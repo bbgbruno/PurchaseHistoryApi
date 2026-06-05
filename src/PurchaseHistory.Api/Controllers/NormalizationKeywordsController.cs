@@ -6,7 +6,6 @@ namespace PurchaseHistory.Api.Controllers;
 
 [ApiController]
 [Route("api/normalization/keywords")]
-[Microsoft.AspNetCore.Authorization.Authorize]
 public class NormalizationKeywordsController : ControllerBase
 {
     [HttpGet]
@@ -51,5 +50,4 @@ public class CreateKeywordRequest
 {
     public string OriginalTerm { get; set; } = string.Empty;
     public string ReplacementTerm { get; set; } = string.Empty;
-    
 }

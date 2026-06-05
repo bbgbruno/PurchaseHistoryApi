@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PurchaseHistory.Api.Auth;
 using PurchaseHistory.Application.UseCases.GetProducts;
 using PurchaseHistory.Application.UseCases.UploadCouponHtml;
 using PurchaseHistory.Domain.Entities;
@@ -10,12 +8,12 @@ namespace PurchaseHistory.Api.Controllers;
 
 [ApiController]
 [Route("api/cupons")]
-[Authorize]
 public class CuponsController : ControllerBase
 {
     [HttpPost("upload-html")]
     public async Task<IActionResult> UploadHtml(
         IFormFile file,
+        [FromQuery] Guid userId,
         [FromServices] UploadCouponHtmlUseCase useCase)
     {
         try
@@ -27,8 +25,6 @@ public class CuponsController : ControllerBase
                     message = "Arquivo inválido."
                 });
             }
-
-            var userId = User.GetUserId();
 
             using var reader =
                 new StreamReader(file.OpenReadStream());
@@ -66,9 +62,9 @@ public class CuponsController : ControllerBase
 
     [HttpGet("imports/pending")]
     public async Task<IActionResult> GetPending(
+        [FromQuery] Guid userId,
         [FromServices] ICouponImportRepository repository)
     {
-        var userId = User.GetUserId();
         var items = await repository.GetPendingAsync(userId);
         return Ok(items);
     }
@@ -78,10 +74,9 @@ public class CuponsController : ControllerBase
         [FromBody] CreateCouponImportRequest request,
         [FromServices] ICouponImportRepository repository)
     {
-        var userId = User.GetUserId();
         var couponImport = new CouponImport
         {
-            UserId = userId,
+            UserId = request.UserId,
             AccessKey = request.AccessKey
         };
 
@@ -93,5 +88,6 @@ public class CuponsController : ControllerBase
 
 public class CreateCouponImportRequest
 {
+    public Guid UserId { get; set; }
     public string AccessKey { get; set; } = string.Empty;
 }

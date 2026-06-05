@@ -1,7 +1,3 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using PurchaseHistory.Api.Auth;
 using PurchaseHistory.Application.UseCases.ApplyProductNormalization;
 using PurchaseHistory.Application.UseCases.GetProductDetails;
 using PurchaseHistory.Application.UseCases.GetProducts;
@@ -24,35 +20,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
-
-#endregion
-
-#region JWT
-
-var jwtSection = builder.Configuration.GetSection("JwtSettings");
-builder.Services.Configure<JwtSettings>(jwtSection);
-
-var jwtSettings = jwtSection.Get<JwtSettings>()
-    ?? throw new InvalidOperationException("JwtSettings não configurado.");
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings.Issuer,
-        ValidAudience = jwtSettings.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
-    };
-});
 
 #endregion
 
@@ -110,8 +77,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowFlutter");
-
-app.UseAuthentication();
 
 app.UseAuthorization();
 

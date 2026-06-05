@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PurchaseHistory.Api.Auth;
 using PurchaseHistory.Domain.Entities;
 using PurchaseHistory.Domain.Interfaces.Repositories;
 
@@ -8,14 +6,13 @@ namespace PurchaseHistory.Api.Controllers;
 
 [ApiController]
 [Route("api/categories")]
-[Authorize]
 public class CategoriesController : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll(
+        [FromQuery] Guid userId,
         [FromServices] ICategoryRepository repository)
     {
-        var userId = User.GetUserId();
         var items = await repository.GetAllAsync(userId);
         return Ok(items);
     }
@@ -23,9 +20,9 @@ public class CategoriesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(
         Guid id,
+        [FromQuery] Guid userId,
         [FromServices] ICategoryRepository repository)
     {
-        var userId = User.GetUserId();
         var item = await repository.GetByIdAsync(id, userId);
         if (item == null)
             return NotFound();
@@ -38,11 +35,10 @@ public class CategoriesController : ControllerBase
         [FromBody] CreateCategoryRequest request,
         [FromServices] ICategoryRepository repository)
     {
-        var userId = User.GetUserId();
         var category = new Category
         {
             Name = request.Name,
-            UserId = userId
+            UserId = request.UserId
         };
 
         var id = await repository.CreateAsync(category);
@@ -57,8 +53,7 @@ public class CategoriesController : ControllerBase
         [FromBody] UpdateCategoryRequest request,
         [FromServices] ICategoryRepository repository)
     {
-        var userId = User.GetUserId();
-        var category = await repository.GetByIdAsync(id, userId);
+        var category = await repository.GetByIdAsync(id, request.UserId);
         if (category == null)
             return NotFound();
 
@@ -71,9 +66,9 @@ public class CategoriesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(
         Guid id,
+        [FromQuery] Guid userId,
         [FromServices] ICategoryRepository repository)
     {
-        var userId = User.GetUserId();
         await repository.DeleteAsync(id, userId);
         return NoContent();
     }
@@ -82,9 +77,11 @@ public class CategoriesController : ControllerBase
 public class CreateCategoryRequest
 {
     public string Name { get; set; } = string.Empty;
+    public Guid UserId { get; set; }
 }
 
 public class UpdateCategoryRequest
 {
     public string Name { get; set; } = string.Empty;
+    public Guid UserId { get; set; }
 }

@@ -1,7 +1,5 @@
 using Dapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PurchaseHistory.Api.Auth;
 using PurchaseHistory.Domain.Dtos;
 using PurchaseHistory.Infrastructure.Data;
 
@@ -9,15 +7,13 @@ namespace PurchaseHistory.Api.Controllers;
 
 [ApiController]
 [Route("api/dashboard")]
-[Authorize]
 public class DashboardController : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> Get(
+        [FromQuery] Guid userId,
         [FromServices] DbConnectionFactory connectionFactory)
     {
-        var userId = User.GetUserId();
-
         using var connection = connectionFactory.CreateConnection();
 
         var currentMonthSql = @"

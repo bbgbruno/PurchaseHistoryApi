@@ -7,7 +7,6 @@ namespace PurchaseHistory.Api.Controllers;
 
 [ApiController]
 [Route("api/normalization/names")]
-[Microsoft.AspNetCore.Authorization.Authorize]
 public class NormalizationNameController : ControllerBase
 {
     [HttpGet]
@@ -63,5 +62,3 @@ public class CreateMappingRequest
     public string ReplacementText { get; set; } = string.Empty;
     public string? MatchType { get; set; }
 }
-
-

@@ -9,7 +9,6 @@ namespace PurchaseHistory.Api.Controllers;
 public class UsersController : ControllerBase
 {
     [HttpGet]
-    [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> GetAll(
         [FromServices] IUserRepository repository)
     {
@@ -18,7 +17,6 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> GetById(
         Guid id,
         [FromServices] IUserRepository repository)
@@ -31,7 +29,6 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    [Microsoft.AspNetCore.Authorization.AllowAnonymous]
     public async Task<IActionResult> Create(
         [FromBody] CreateUserRequest request,
         [FromServices] IUserRepository repository)
@@ -55,7 +52,6 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> Update(
         Guid id,
         [FromBody] UpdateUserRequest request,
@@ -86,7 +82,6 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> Delete(
         Guid id,
         [FromServices] IUserRepository repository)
