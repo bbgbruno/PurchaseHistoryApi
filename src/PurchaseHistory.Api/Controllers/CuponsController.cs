@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using PurchaseHistory.Application.UseCases.GetProducts;
 using PurchaseHistory.Application.UseCases.UploadCouponHtml;
 using PurchaseHistory.Domain.Entities;
 using PurchaseHistory.Domain.Interfaces.Repositories;
@@ -52,13 +51,6 @@ public class CuponsController : ControllerBase
         }
     }
 
-    [HttpGet("products")]
-    public async Task<IActionResult> GetProducts([FromServices] GetProductsUseCase useCase)
-    {
-        var output = await useCase.Handle();
-
-        return Ok(output);
-    }
 
     [HttpGet("imports/pending")]
     public async Task<IActionResult> GetPending([FromServices] ICouponImportRepository repository)

@@ -9,6 +9,77 @@ namespace PurchaseHistory.Api.Controllers;
 [Route("api/dashboard")]
 public class DashboardController : ControllerBase
 {
+    [HttpGet("category/{categoryId}/products")]
+    public async Task<IActionResult> GetCategoryProducts(
+        Guid categoryId,
+        [FromQuery] Guid userId,
+        [FromServices] DbConnectionFactory connectionFactory)
+    {
+        using var connection = connectionFactory.CreateConnection();
+
+        var sql = @"
+            SELECT
+                pr.Id AS ProductId,
+                pr.NormalizedName AS ProductName,
+                SUM(pi.Quantity) AS Quantity,
+                SUM(pi.TotalPrice) AS TotalPrice
+            FROM PurchaseItems pi
+            INNER JOIN Purchases p ON p.Id = pi.PurchaseId
+            INNER JOIN Products pr ON pr.Id = pi.ProductId
+            WHERE pr.CategoryId = @CategoryId
+              AND p.UserId = @UserId
+              AND p.PurchaseDate >= DATE_TRUNC('month', NOW() - INTERVAL '1 month')
+              AND p.PurchaseDate < DATE_TRUNC('month', NOW() + INTERVAL '1 month')
+            GROUP BY pr.Id, pr.NormalizedName";
+
+        var all = (await connection.QueryAsync<CategoryProductItemDto>(sql, new { CategoryId = categoryId, UserId = userId })).ToList();
+
+        var currentMonthSql = @"
+            SELECT
+                pr.Id AS ProductId,
+                pr.NormalizedName AS ProductName,
+                SUM(pi.Quantity) AS Quantity,
+                SUM(pi.TotalPrice) AS TotalPrice
+            FROM PurchaseItems pi
+            INNER JOIN Purchases p ON p.Id = pi.PurchaseId
+            INNER JOIN Products pr ON pr.Id = pi.ProductId
+            WHERE pr.CategoryId = @CategoryId
+              AND p.UserId = @UserId
+              AND p.PurchaseDate >= DATE_TRUNC('month', NOW())
+              AND p.PurchaseDate < DATE_TRUNC('month', NOW() + INTERVAL '1 month')
+            GROUP BY pr.Id, pr.NormalizedName";
+
+        var currentMonth = (await connection.QueryAsync<CategoryProductItemDto>(currentMonthSql, new { CategoryId = categoryId, UserId = userId })).ToList();
+
+        var lastMonthSql = @"
+            SELECT
+                pr.Id AS ProductId,
+                pr.NormalizedName AS ProductName,
+                SUM(pi.Quantity) AS Quantity,
+                SUM(pi.TotalPrice) AS TotalPrice
+            FROM PurchaseItems pi
+            INNER JOIN Purchases p ON p.Id = pi.PurchaseId
+            INNER JOIN Products pr ON pr.Id = pi.ProductId
+            WHERE pr.CategoryId = @CategoryId
+              AND p.UserId = @UserId
+              AND p.PurchaseDate >= DATE_TRUNC('month', NOW() - INTERVAL '1 month')
+              AND p.PurchaseDate < DATE_TRUNC('month', NOW())
+            GROUP BY pr.Id, pr.NormalizedName";
+
+        var lastMonth = (await connection.QueryAsync<CategoryProductItemDto>(lastMonthSql, new { CategoryId = categoryId, UserId = userId })).ToList();
+
+        var categoryName = await connection.ExecuteScalarAsync<string>(
+            "SELECT Name FROM Categories WHERE Id = @Id", new { Id = categoryId });
+
+        return Ok(new CategoryProductsDto
+        {
+            CategoryId = categoryId,
+            CategoryName = categoryName ?? "",
+            CurrentMonth = currentMonth,
+            LastMonth = lastMonth
+        });
+    }
+
     [HttpGet]
     public async Task<IActionResult> Get(
         [FromQuery] Guid userId,

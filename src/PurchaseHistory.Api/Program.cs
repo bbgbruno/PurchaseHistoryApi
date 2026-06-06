@@ -1,6 +1,5 @@
 using PurchaseHistory.Application.UseCases.ApplyProductNormalization;
 using PurchaseHistory.Application.UseCases.GetProductDetails;
-using PurchaseHistory.Application.UseCases.GetProducts;
 using PurchaseHistory.Application.UseCases.SearchProducts;
 using PurchaseHistory.Application.UseCases.UploadCouponHtml;
 using PurchaseHistory.Domain.Interfaces;
@@ -43,7 +42,6 @@ builder.Services.AddScoped<IProductNormalizationService, ProductNormalizationSer
 #region UseCases
 
 builder.Services.AddScoped<UploadCouponHtmlUseCase>();
-builder.Services.AddScoped<GetProductsUseCase>();
 builder.Services.AddScoped<SearchProductsUseCase>();
 builder.Services.AddScoped<GetProductDetailsUseCase>();
 builder.Services.AddScoped<ApplyProductNormalizationUseCase>();
