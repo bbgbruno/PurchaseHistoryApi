@@ -4,30 +4,14 @@ public class Product
 {
     public Guid Id { get; set; }
 
-    /*
-    ==========================================================
-    PRODUTO NORMALIZADO
-    ==========================================================
-    */
+    public Guid UserId { get; set; }
 
     public string NormalizedName { get; set; }
         = string.Empty;
 
-    /*
-    ==========================================================
-    INFORMAÇÕES OPCIONAIS
-    ==========================================================
-    */
-
     public string? Brand { get; set; }
 
     public Guid? CategoryId { get; set; }
-
-    /*
-    ==========================================================
-    CONTROLE
-    ==========================================================
-    */
 
     public DateTime CreatedAt { get; set; }
 }

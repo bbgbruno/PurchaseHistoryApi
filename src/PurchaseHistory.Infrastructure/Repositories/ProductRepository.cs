@@ -16,12 +16,13 @@ public class ProductRepository : IProductRepository
     }
 
     public async Task<Product?> FindByNameAsync(
-        string normalizedName)
+        string normalizedName, Guid userId)
     {
         const string sql = @"
         SELECT *
         FROM Products
         WHERE NormalizedName = @NormalizedName
+          AND UserId = @UserId
         LIMIT 1";
 
         using var connection =
@@ -31,7 +32,8 @@ public class ProductRepository : IProductRepository
             sql,
             new
             {
-                NormalizedName = normalizedName
+                NormalizedName = normalizedName,
+                UserId = userId
             });
     }
 
@@ -41,6 +43,7 @@ public class ProductRepository : IProductRepository
         INSERT INTO Products
         (
             Id,
+            UserId,
             NormalizedName,
             Brand,
             CategoryId,
@@ -49,6 +52,7 @@ public class ProductRepository : IProductRepository
         VALUES
         (
             @Id,
+            @UserId,
             @NormalizedName,
             @Brand,
             @CategoryId,

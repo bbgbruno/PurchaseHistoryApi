@@ -184,7 +184,8 @@ public class UploadCouponHtmlUseCase
 
             var existingProduct =
                 await _productRepository.FindByNameAsync(
-                    normalizedName
+                    normalizedName,
+                    input.UserId
                 );
 
             Guid productId;
@@ -194,6 +195,8 @@ public class UploadCouponHtmlUseCase
                 var product = new Product
                 {
                     Id = Guid.NewGuid(),
+
+                    UserId = input.UserId,
 
                     NormalizedName = normalizedName,
 

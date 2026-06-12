@@ -4,7 +4,7 @@ namespace PurchaseHistory.Domain.Interfaces.Repositories;
 
 public interface IProductRepository
 {
-    Task<Product?> FindByNameAsync(string normalizedName);
+    Task<Product?> FindByNameAsync(string normalizedName, Guid userId);
 
     Task<Guid> CreateAsync(Product product);
 

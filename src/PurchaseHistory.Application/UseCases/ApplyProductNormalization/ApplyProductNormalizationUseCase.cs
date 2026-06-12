@@ -36,15 +36,19 @@ public class ApplyProductNormalizationUseCase
         ==========================================================
         */
 
+        var allProducts = await _productRepository.GetAllAsync();
+
         var mappings = await _mappingRepository.GetAllActiveAsync();
 
         foreach (var mapping in mappings)
         {
-            var sourceProduct = await _productRepository.FindByNameAsync(mapping.OriginalText);
+            var sourceProduct = allProducts.FirstOrDefault(p =>
+                string.Equals(p.NormalizedName, mapping.OriginalText, StringComparison.OrdinalIgnoreCase));
             if (sourceProduct == null)
                 continue;
 
-            var targetProduct = await _productRepository.FindByNameAsync(mapping.ReplacementText);
+            var targetProduct = allProducts.FirstOrDefault(p =>
+                string.Equals(p.NormalizedName, mapping.ReplacementText, StringComparison.OrdinalIgnoreCase));
             if (targetProduct == null)
             {
                 targetProduct = new Product
@@ -82,13 +86,11 @@ public class ApplyProductNormalizationUseCase
             });
         }
 
-        /*
+       /*
        ==========================================================
        SUBSTITUIÇÕES
        ==========================================================
        */
-
-        var allProducts = await _productRepository.GetAllAsync();
 
         foreach (var product in allProducts)
         {
@@ -98,7 +100,9 @@ public class ApplyProductNormalizationUseCase
             if (substituted == originalName)
                 continue;
 
-            var existing = await _productRepository.FindByNameAsync(substituted);
+            var existing = allProducts.FirstOrDefault(p =>
+                string.Equals(p.NormalizedName, substituted, StringComparison.OrdinalIgnoreCase) &&
+                p.Id != product.Id);
 
             if (existing != null && existing.Id != product.Id)
             {
