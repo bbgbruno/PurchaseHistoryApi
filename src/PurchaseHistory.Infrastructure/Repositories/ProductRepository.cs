@@ -22,7 +22,7 @@ public class ProductRepository : IProductRepository
         SELECT *
         FROM Products
         WHERE NormalizedName = @NormalizedName
-          AND UserId = @UserId
+          AND (UserId = @UserId OR UserId IS NULL)
         LIMIT 1";
 
         using var connection =
@@ -110,6 +110,17 @@ public class ProductRepository : IProductRepository
 
         using var connection = _connectionFactory.CreateConnection();
         await connection.ExecuteAsync(sql, new { Id = id, CategoryId = categoryId });
+    }
+
+    public async Task UpdateUserIdAsync(Guid id, Guid userId)
+    {
+        const string sql = @"
+            UPDATE Products
+            SET UserId = @UserId
+            WHERE Id = @Id";
+
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.ExecuteAsync(sql, new { Id = id, UserId = userId });
     }
 
     public async Task DeleteAsync(Guid id)

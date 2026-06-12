@@ -210,6 +210,14 @@ public class UploadCouponHtmlUseCase
             }
             else
             {
+                if (existingProduct.UserId == Guid.Empty)
+                {
+                    await _productRepository.UpdateUserIdAsync(
+                        existingProduct.Id,
+                        input.UserId
+                    );
+                }
+
                 productId = existingProduct.Id;
             }
 
