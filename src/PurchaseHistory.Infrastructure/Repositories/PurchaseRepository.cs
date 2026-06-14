@@ -63,10 +63,11 @@ public class PurchaseRepository : IPurchaseRepository
                 p.TotalValue,
                 s.Name AS StoreName,
                 COUNT(pi.Id) AS TotalItems,
-                COUNT(CASE WHEN pi.CategoryId IS NOT NULL THEN 1 END) AS CategorizedItems
+                COUNT(CASE WHEN pr.CategoryId IS NOT NULL THEN 1 END) AS CategorizedItems
             FROM Purchases p
             INNER JOIN Stores s ON s.Id = p.StoreId
             LEFT JOIN PurchaseItems pi ON pi.PurchaseId = p.Id
+            LEFT JOIN Products pr ON pr.Id = pi.ProductId
             WHERE p.UserId = @UserId
             GROUP BY p.Id, p.UserId, p.PurchaseDate, p.TotalValue, s.Name
             ORDER BY p.PurchaseDate DESC";
