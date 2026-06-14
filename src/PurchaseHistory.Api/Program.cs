@@ -2,6 +2,7 @@ using PurchaseHistory.Application.UseCases.ApplyProductNormalization;
 using PurchaseHistory.Application.UseCases.GetProductDetails;
 using PurchaseHistory.Application.UseCases.SearchProducts;
 using PurchaseHistory.Application.UseCases.UploadCouponHtml;
+using PurchaseHistory.Application.UseCases.UploadCouponPdf;
 using PurchaseHistory.Domain.Interfaces;
 using PurchaseHistory.Domain.Interfaces.Repositories;
 using PurchaseHistory.Domain.Interfaces.Services;
@@ -26,6 +27,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<DbConnectionFactory>();
 builder.Services.AddScoped<ICouponHtmlParser, NfceHtmlParser>();
+builder.Services.AddScoped<IPdfCouponParser, NfcePdfParser>();
 builder.Services.AddScoped<IStoreRepository, StoreRepository>();
 builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
 builder.Services.AddScoped<IPurchaseItemRepository, PurchaseItemRepository>();
@@ -42,6 +44,7 @@ builder.Services.AddScoped<IProductNormalizationService, ProductNormalizationSer
 #region UseCases
 
 builder.Services.AddScoped<UploadCouponHtmlUseCase>();
+builder.Services.AddScoped<UploadPdfCouponUseCase>();
 builder.Services.AddScoped<SearchProductsUseCase>();
 builder.Services.AddScoped<GetProductDetailsUseCase>();
 builder.Services.AddScoped<ApplyProductNormalizationUseCase>();

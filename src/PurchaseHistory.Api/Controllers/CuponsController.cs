@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PurchaseHistory.Application.UseCases.UploadCouponHtml;
+using PurchaseHistory.Application.UseCases.UploadCouponPdf;
 using PurchaseHistory.Domain.Entities;
 using PurchaseHistory.Domain.Interfaces.Repositories;
 
@@ -9,6 +10,35 @@ namespace PurchaseHistory.Api.Controllers;
 [Route("api/cupons")]
 public class CuponsController : ControllerBase
 {
+    [HttpPost("upload-pdf")]
+    public async Task<IActionResult> UploadPdf(
+        IFormFile file,
+        [FromQuery] Guid userId,
+        [FromServices] UploadPdfCouponUseCase useCase)
+    {
+        try
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest(new { message = "Arquivo inválido." });
+
+            using var ms = new MemoryStream();
+            await file.CopyToAsync(ms);
+
+            var input = new UploadPdfCouponInput
+            {
+                FileContent = ms.ToArray(),
+                UserId = userId
+            };
+
+            var output = await useCase.Handle(input);
+            return Ok(output);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = ex.Message });
+        }
+    }
+
     [HttpPost("upload-html")]
     public async Task<IActionResult> UploadHtml(
         IFormFile file,
