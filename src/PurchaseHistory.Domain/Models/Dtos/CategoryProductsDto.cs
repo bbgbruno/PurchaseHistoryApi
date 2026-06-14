@@ -13,5 +13,7 @@ public class CategoryProductItemDto
     public Guid ProductId { get; set; }
     public string ProductName { get; set; } = string.Empty;
     public decimal Quantity { get; set; }
+    public string? Unit { get; set; }
+    public decimal UnitPrice { get; set; }
     public decimal TotalPrice { get; set; }
 }

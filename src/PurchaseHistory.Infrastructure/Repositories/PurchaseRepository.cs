@@ -61,10 +61,14 @@ public class PurchaseRepository : IPurchaseRepository
                 p.UserId,
                 p.PurchaseDate,
                 p.TotalValue,
-                s.Name AS StoreName
+                s.Name AS StoreName,
+                COUNT(pi.Id) AS TotalItems,
+                COUNT(CASE WHEN pi.CategoryId IS NOT NULL THEN 1 END) AS CategorizedItems
             FROM Purchases p
             INNER JOIN Stores s ON s.Id = p.StoreId
+            LEFT JOIN PurchaseItems pi ON pi.PurchaseId = p.Id
             WHERE p.UserId = @UserId
+            GROUP BY p.Id, p.UserId, p.PurchaseDate, p.TotalValue, s.Name
             ORDER BY p.PurchaseDate DESC";
 
         using var connection = _connectionFactory.CreateConnection();

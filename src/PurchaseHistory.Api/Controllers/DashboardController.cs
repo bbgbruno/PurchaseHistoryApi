@@ -17,28 +17,17 @@ public class DashboardController : ControllerBase
     {
         using var connection = connectionFactory.CreateConnection();
 
-        var sql = @"
-            SELECT
-                pr.Id AS ProductId,
-                pr.NormalizedName AS ProductName,
-                SUM(pi.Quantity) AS Quantity,
-                SUM(pi.TotalPrice) AS TotalPrice
-            FROM PurchaseItems pi
-            INNER JOIN Purchases p ON p.Id = pi.PurchaseId
-            INNER JOIN Products pr ON pr.Id = pi.ProductId
-            WHERE pr.CategoryId = @CategoryId
-              AND p.UserId = @UserId
-              AND p.PurchaseDate >= DATE_TRUNC('month', NOW() - INTERVAL '1 month')
-              AND p.PurchaseDate < DATE_TRUNC('month', NOW() + INTERVAL '1 month')
-            GROUP BY pr.Id, pr.NormalizedName";
-
-        var all = (await connection.QueryAsync<CategoryProductItemDto>(sql, new { CategoryId = categoryId, UserId = userId })).ToList();
-
         var currentMonthSql = @"
             SELECT
                 pr.Id AS ProductId,
                 pr.NormalizedName AS ProductName,
                 SUM(pi.Quantity) AS Quantity,
+                MAX(pi.Unit) AS Unit,
+                CASE
+                    WHEN SUM(pi.Quantity) > 0
+                    THEN ROUND(SUM(pi.TotalPrice) / SUM(pi.Quantity), 4)
+                    ELSE 0
+                END AS UnitPrice,
                 SUM(pi.TotalPrice) AS TotalPrice
             FROM PurchaseItems pi
             INNER JOIN Purchases p ON p.Id = pi.PurchaseId
@@ -56,6 +45,12 @@ public class DashboardController : ControllerBase
                 pr.Id AS ProductId,
                 pr.NormalizedName AS ProductName,
                 SUM(pi.Quantity) AS Quantity,
+                MAX(pi.Unit) AS Unit,
+                CASE
+                    WHEN SUM(pi.Quantity) > 0
+                    THEN ROUND(SUM(pi.TotalPrice) / SUM(pi.Quantity), 4)
+                    ELSE 0
+                END AS UnitPrice,
                 SUM(pi.TotalPrice) AS TotalPrice
             FROM PurchaseItems pi
             INNER JOIN Purchases p ON p.Id = pi.PurchaseId

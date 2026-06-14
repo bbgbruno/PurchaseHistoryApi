@@ -7,4 +7,6 @@ public class PurchaseListDto
     public DateTime? PurchaseDate { get; set; }
     public decimal TotalValue { get; set; }
     public string StoreName { get; set; } = string.Empty;
+    public int TotalItems { get; set; }
+    public int CategorizedItems { get; set; }
 }
