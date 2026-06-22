@@ -4,6 +4,8 @@ public class DashboardDto
 {
     public decimal TotalCurrentMonth { get; set; }
     public decimal TotalLastMonth { get; set; }
+    public decimal CategorizedCurrentMonth { get; set; }
+    public decimal CategorizedLastMonth { get; set; }
     public List<CategorySummaryDto> Categories { get; set; } = [];
 }
 

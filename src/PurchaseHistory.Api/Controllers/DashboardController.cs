@@ -99,6 +99,30 @@ public class DashboardController : ControllerBase
 
         var lastTotal = await connection.ExecuteScalarAsync<decimal>(lastMonthSql, new { UserId = userId });
 
+        var catCurrentSql = @"
+            SELECT COALESCE(SUM(pi.TotalPrice), 0)
+            FROM PurchaseItems pi
+            INNER JOIN Purchases p ON p.Id = pi.PurchaseId
+            INNER JOIN Products pr ON pr.Id = pi.ProductId
+            WHERE p.UserId = @UserId
+              AND pr.CategoryId IS NOT NULL
+              AND p.PurchaseDate >= DATE_TRUNC('month', NOW())
+              AND p.PurchaseDate < DATE_TRUNC('month', NOW() + INTERVAL '1 month')";
+
+        var catCurrent = await connection.ExecuteScalarAsync<decimal>(catCurrentSql, new { UserId = userId });
+
+        var catLastSql = @"
+            SELECT COALESCE(SUM(pi.TotalPrice), 0)
+            FROM PurchaseItems pi
+            INNER JOIN Purchases p ON p.Id = pi.PurchaseId
+            INNER JOIN Products pr ON pr.Id = pi.ProductId
+            WHERE p.UserId = @UserId
+              AND pr.CategoryId IS NOT NULL
+              AND p.PurchaseDate >= DATE_TRUNC('month', NOW() - INTERVAL '1 month')
+              AND p.PurchaseDate < DATE_TRUNC('month', NOW())";
+
+        var catLast = await connection.ExecuteScalarAsync<decimal>(catLastSql, new { UserId = userId });
+
         var categoriesSql = @"
             SELECT
                 c.Id AS CategoryId,
@@ -139,6 +163,8 @@ public class DashboardController : ControllerBase
         {
             TotalCurrentMonth = currentTotal,
             TotalLastMonth = lastTotal,
+            CategorizedCurrentMonth = catCurrent,
+            CategorizedLastMonth = catLast,
             Categories = categories
         });
     }
