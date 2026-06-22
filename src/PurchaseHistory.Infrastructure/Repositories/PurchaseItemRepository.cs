@@ -33,6 +33,7 @@ public class PurchaseItemRepository
             Quantity,
             Unit,
             UnitPrice,
+            Discount,
             TotalPrice,
             CreatedAt
         )
@@ -48,6 +49,7 @@ public class PurchaseItemRepository
             @Quantity,
             @Unit,
             @UnitPrice,
+            @Discount,
             @TotalPrice,
             @CreatedAt
         )";
@@ -204,5 +206,18 @@ public class PurchaseItemRepository
 
         using var connection = _connectionFactory.CreateConnection();
         return await connection.QueryFirstOrDefaultAsync<PurchaseItem>(sql, new { Id = id, UserId = userId });
+    }
+
+    public async Task UpdateDiscountAsync(Guid id, decimal discount, decimal unitPrice, decimal totalPrice)
+    {
+        const string sql = @"
+            UPDATE PurchaseItems
+            SET Discount = @Discount,
+                UnitPrice = @UnitPrice,
+                TotalPrice = @TotalPrice
+            WHERE Id = @Id";
+
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.ExecuteAsync(sql, new { Id = id, Discount = discount, UnitPrice = unitPrice, TotalPrice = totalPrice });
     }
 }

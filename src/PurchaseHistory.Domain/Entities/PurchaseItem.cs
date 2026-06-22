@@ -22,6 +22,8 @@ public class PurchaseItem
 
     public decimal UnitPrice { get; set; }
 
+    public decimal Discount { get; set; }
+
     public decimal TotalPrice { get; set; }
 
     public DateTime CreatedAt { get; set; }

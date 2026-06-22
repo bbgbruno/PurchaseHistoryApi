@@ -12,4 +12,5 @@ public interface IPurchaseItemRepository
     Task<IEnumerable<PurchaseItem>> GetByProductIdAsync(Guid productId);
     Task<IEnumerable<PurchaseItem>> GetByPurchaseIdAsync(Guid purchaseId, Guid userId);
     Task<PurchaseItem?> GetByIdAsync(Guid id, Guid userId);
+    Task UpdateDiscountAsync(Guid id, decimal discount, decimal unitPrice, decimal totalPrice);
 }
