@@ -29,7 +29,8 @@ public class PurchaseItemsController : ControllerBase
         Guid id,
         [FromQuery] Guid userId,
         [FromBody] DiscountRequest request,
-        [FromServices] IPurchaseItemRepository purchaseItemRepository)
+        [FromServices] IPurchaseItemRepository purchaseItemRepository,
+        [FromServices] IPurchaseRepository purchaseRepository)
     {
         var item = await purchaseItemRepository.GetByIdAsync(id, userId);
         if (item == null)
@@ -42,6 +43,7 @@ public class PurchaseItemsController : ControllerBase
         var newTotalPrice = newUnitPrice * item.Quantity;
 
         await purchaseItemRepository.UpdateDiscountAsync(id, request.Discount, newUnitPrice, newTotalPrice);
+        await purchaseRepository.UpdateTotalValueAsync(item.PurchaseId);
         return NoContent();
     }
 }

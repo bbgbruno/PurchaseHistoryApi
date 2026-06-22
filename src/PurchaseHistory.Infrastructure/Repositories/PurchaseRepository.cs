@@ -118,4 +118,19 @@ public class PurchaseRepository : IPurchaseRepository
         var rows = await connection.ExecuteAsync(sql, new { Id = id, PurchaseDate = purchaseDate, UserId = userId });
         return rows > 0;
     }
+
+    public async Task UpdateTotalValueAsync(Guid id)
+    {
+        const string sql = @"
+            UPDATE Purchases
+            SET TotalValue = (
+                SELECT COALESCE(SUM(TotalPrice), 0)
+                FROM PurchaseItems
+                WHERE PurchaseId = @Id
+            )
+            WHERE Id = @Id";
+
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.ExecuteAsync(sql, new { Id = id });
+    }
 }

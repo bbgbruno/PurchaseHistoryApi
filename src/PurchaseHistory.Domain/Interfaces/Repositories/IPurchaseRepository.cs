@@ -10,4 +10,5 @@ public interface IPurchaseRepository
     Task DeleteAsync(Guid id, Guid userId);
     Task<bool> ExistsByAccessKeyAsync(string accessKey);
     Task<bool> UpdatePurchaseDateAsync(Guid id, DateTime purchaseDate, Guid userId);
+    Task UpdateTotalValueAsync(Guid id);
 }
