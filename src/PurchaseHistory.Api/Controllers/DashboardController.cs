@@ -9,6 +9,41 @@ namespace PurchaseHistory.Api.Controllers;
 [Route("api/dashboard")]
 public class DashboardController : ControllerBase
 {
+    [HttpGet("category/{categoryId}/monthly")]
+    public async Task<IActionResult> GetCategoryMonthly(
+        Guid categoryId,
+        [FromQuery] Guid userId,
+        [FromServices] DbConnectionFactory connectionFactory)
+    {
+        using var connection = connectionFactory.CreateConnection();
+
+        var sql = @"
+            SELECT
+                EXTRACT(YEAR FROM p.PurchaseDate) AS Year,
+                EXTRACT(MONTH FROM p.PurchaseDate) AS Month,
+                COALESCE(SUM(pi.TotalPrice), 0) AS Total
+            FROM PurchaseItems pi
+            INNER JOIN Purchases p ON p.Id = pi.PurchaseId
+            INNER JOIN Products pr ON pr.Id = pi.ProductId
+            WHERE pr.CategoryId = @CategoryId
+              AND p.UserId = @UserId
+              AND p.PurchaseDate >= DATE_TRUNC('month', NOW() - INTERVAL '11 months')
+            GROUP BY EXTRACT(YEAR FROM p.PurchaseDate), EXTRACT(MONTH FROM p.PurchaseDate)
+            ORDER BY Year, Month";
+
+        var months = (await connection.QueryAsync<MonthTotalDto>(sql, new { CategoryId = categoryId, UserId = userId })).ToList();
+
+        var categoryName = await connection.ExecuteScalarAsync<string>(
+            "SELECT Name FROM Categories WHERE Id = @Id", new { Id = categoryId });
+
+        return Ok(new CategoryMonthlyDto
+        {
+            CategoryId = categoryId,
+            CategoryName = categoryName ?? "",
+            Months = months
+        });
+    }
+
     [HttpGet("category/{categoryId}/products")]
     public async Task<IActionResult> GetCategoryProducts(
         Guid categoryId,
