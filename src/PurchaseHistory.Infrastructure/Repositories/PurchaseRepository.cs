@@ -53,9 +53,9 @@ public class PurchaseRepository : IPurchaseRepository
         return purchase.Id;
     }
 
-    public async Task<IEnumerable<PurchaseListDto>> GetAllAsync(Guid userId)
+    public async Task<IEnumerable<PurchaseListDto>> GetAllAsync(Guid userId, int? month = null, int? year = null)
     {
-        const string sql = @"
+        var sql = @"
             SELECT
                 p.Id,
                 p.UserId,
@@ -68,13 +68,21 @@ public class PurchaseRepository : IPurchaseRepository
             INNER JOIN Stores s ON s.Id = p.StoreId
             LEFT JOIN PurchaseItems pi ON pi.PurchaseId = p.Id
             LEFT JOIN Products pr ON pr.Id = pi.ProductId
-            WHERE p.UserId = @UserId
+            WHERE p.UserId = @UserId";
+
+        if (month.HasValue)
+            sql += " AND EXTRACT(MONTH FROM p.PurchaseDate) = @Month";
+
+        if (year.HasValue)
+            sql += " AND EXTRACT(YEAR FROM p.PurchaseDate) = @Year";
+
+        sql += @"
             GROUP BY p.Id, p.UserId, p.PurchaseDate, p.TotalValue, s.Name
             ORDER BY p.PurchaseDate DESC";
 
         using var connection = _connectionFactory.CreateConnection();
 
-        return await connection.QueryAsync<PurchaseListDto>(sql, new { UserId = userId });
+        return await connection.QueryAsync<PurchaseListDto>(sql, new { UserId = userId, Month = month, Year = year });
     }
 
     public async Task DeleteAsync(Guid id, Guid userId)
